@@ -32,3 +32,4 @@ Ruling: Task 13 adds a placeholder index.html so Playwright's webServer url chec
 Task 13: complete - pnpm test:gpu 1 passed (parity); pnpm test 15 files 67 passed; typecheck 0
 Task 14: complete - pnpm test:gpu 2 passed; pnpm test 15 files 67 passed; typecheck 0
 Task 15: complete - pnpm test 16 files 70 passed; pnpm typecheck exit 0
+Task 16: complete - pnpm test 17 files 72 passed; pnpm typecheck exit 0

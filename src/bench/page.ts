@@ -66,11 +66,13 @@ async function main(): Promise<void> {
     host.style.cssText = `width:${PLOT.width + MARGINS.left + MARGINS.right}px;height:${PLOT.height + MARGINS.top + MARGINS.bottom}px`;
     stage.appendChild(host);
     let chart: Chart | null = null;
+    let device: GPUDevice | null = null;
     try {
       let factory: BackendFactory;
       if (kind === "webgpu") {
         const acq = await acquireDevice(undefined, { timestamps: true });
         adapter = acq.adapter;
+        device = acq.device;
         factory = (h, theme) => WebGpuBackend.create(h, acq, { background: theme.background, gpuTiming: true });
       } else if (kind === "canvas2d") {
         factory = (h, theme) => Canvas2DBackend.create(h, theme.background);
@@ -94,6 +96,8 @@ async function main(): Promise<void> {
       results[kind] = { error: e instanceof Error ? e.message : String(e) };
     } finally {
       chart?.destroy();
+      // The backend does not own the device, so release it here too.
+      device?.destroy();
       host.remove();
     }
   }

@@ -25,3 +25,18 @@ What was not run: GitHub CI (no remote), npm publish, browsers other than host C
 What is left: v0.2 items in `docs/DEVDOCS.md` section 7, plus the cosmetic paused-pane text overlap in the uPlot pane.
 
 How to verify: run the Gates table commands in the plan (G1 to G11).
+
+## 2026-10-04, Claude (Opus lead, verify and docs), branch main
+
+What changed:
+- Confirmed the three review findings are fixed: WebGPU frames are now timed until `queue.onSubmittedWorkDone()` with one frame in flight (headline 6.39 ms p95 at 4x1M, was a CPU-submit 1.12 ms); `GpuTimer` times every frame through a ring of 8 query slots (n=660 per scenario); `GpuChart` and the demo destroy the devices they acquire.
+- Small leftover fixed: `src/bench/page.ts` now destroys its WebGPU device after each renderer.
+- Rewrote `docs/DEVDOCS.md` as the developer guide (headline markers kept, so `pnpm bench:table` still updates it).
+
+Gates run in this session: typecheck exit 0; `pnpm test` 21 files, 92 passed; `pnpm build` ok; `pnpm pack:smoke` ok; `pnpm e2e` 2 passed; `pnpm test:gpu` 4 passed; `pnpm bench:table --check` ok; Docker demo returned 200 on port 5432 and `docker compose down` left no containers; actionlint exit 0.
+
+What was not run: `pnpm bench` (numbers are from the fix commit; the page change only releases the device after measuring), GitHub CI (no remote), browsers other than host Chrome 154.
+
+What is left: the v0.2 list in `docs/DEVDOCS.md` section 7 (device-lost recovery, real adapters, ingest worker, npm publish, hosted URL).
+
+How to verify: `pnpm typecheck && pnpm test && pnpm build && pnpm e2e && pnpm test:gpu && pnpm pack:smoke && pnpm bench:table --check`.

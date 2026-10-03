@@ -1,2 +1,48 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8" /><title>webgpu-chart</title></head><body>placeholder, replaced in Task 17</body></html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>webgpu-chart</title>
+    <meta name="description" content="A streaming time-series chart that decimates millions of points per frame on WebGPU, next to Canvas2D and uPlot." />
+  </head>
+  <body>
+    <header class="top">
+      <div class="brand">
+        <span class="dot" aria-hidden="true"></span>
+        <span class="name">webgpu-chart</span>
+        <span class="sub" id="summary">loading</span>
+      </div>
+      <div class="fps" title="Page frame rate. Every running pane shares it.">
+        <span class="label">page</span> <span id="fps" data-testid="fps">-</span> <span class="label">fps</span>
+      </div>
+    </header>
+    <form class="controls" id="controls" aria-label="Data controls">
+      <label>Points per series
+        <select name="points">
+          <option value="100000">100k</option>
+          <option value="1000000" selected>1M</option>
+          <option value="2000000">2M</option>
+        </select>
+      </label>
+      <label>Series
+        <select name="series">
+          <option value="1">1</option>
+          <option value="4" selected>4</option>
+        </select>
+      </label>
+      <label>Ingest
+        <select name="ingest">
+          <option value="0">off</option>
+          <option value="1000" selected>1 kHz</option>
+        </select>
+      </label>
+      <button type="button" id="follow">Follow newest</button>
+      <a class="link" href="./bench.html?points=100000&amp;frames=240">Open bench page</a>
+    </form>
+    <p class="banner" id="banner" role="status" hidden data-testid="banner"></p>
+    <main id="panes"></main>
+    <footer class="hint">Drag to pan. Wheel to zoom at the cursor. Double-click to follow the newest data again.</footer>
+    <script type="module" src="/src/demo/main.ts"></script>
+  </body>
+</html>

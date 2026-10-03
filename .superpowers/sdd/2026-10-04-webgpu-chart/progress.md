@@ -40,3 +40,5 @@ Task 19: complete - pnpm test:gpu 4 passed; pnpm build:demo exit 0; pnpm bench -
 Task 20: complete - pnpm build exit 0 (index.js 48.09 kB, 0 uplot refs); pnpm pack:smoke printed consumer typecheck ok without @webgpu/types
 Ruling: CI workflow written and actionlint-clean but cannot run without a remote; none added - plan Task 21
 Task 21: complete - docker compose up: webgpu-chart-app 5432->80, / and /bench.html 200, nothing left after down; actionlint no output exit 0
+Gates (Task 22): G1 pnpm typecheck exit 0; G2 pnpm test 19 files 82 passed; G3 pnpm build exit 0 (dist/demo/index.html, dist/lib/index.js, dist/lib/index.d.ts exist); G4 pnpm e2e 2 passed; G5 pnpm test:gpu 4 passed; G6 pnpm pack:smoke consumer typecheck ok without @webgpu/types; G8 compose 200 and container removed after down; G9 actionlint no output; port grep and secret grep print nothing. G7 and G10 run in Tasks 23 and 24.
+Task 22: complete - G1-G6, G8, G9, port and secret greps pass (see Gates line)

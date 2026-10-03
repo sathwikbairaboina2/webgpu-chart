@@ -35,3 +35,4 @@ Task 15: complete - pnpm test 16 files 70 passed; pnpm typecheck exit 0
 Task 16: complete - pnpm test 17 files 72 passed; pnpm typecheck exit 0
 Ruling: Task 17 step 4 (look at the demo) checked headlessly only: host Chrome loaded http://localhost:5430/, body data-ready became true and the fps readout showed 120; no screenshot was inspected - cost if wrong: visual polish unverified
 Task 17: complete - pnpm e2e 2 passed; pnpm test:gpu 3 passed; pnpm test 17 files 72 passed; typecheck 0
+Task 18: complete - pnpm test 19 files 82 passed; pnpm typecheck exit 0

@@ -12,6 +12,8 @@ import { WebGpuBackend } from "../gpu/WebGpuBackend";
 interface Pane {
   kind: BackendKind;
   chart: Chart | null;
+  /** The WebGPU pane owns its device; it is destroyed with the chart so rebuilds do not leak devices. */
+  device: GPUDevice | null;
   el: HTMLElement;
   stats: HTMLElement;
   toggle: HTMLButtonElement;
@@ -26,6 +28,8 @@ const TITLES: Record<BackendKind, [string, string]> = {
 };
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+/** GPU timestamps tick in 65.5 us steps, so anything below 0.07 ms is shown as a bound, not as 0.00. */
+const fmtGpu = (v: number | null) => (v === null ? "n/a" : v < 0.07 ? "<0.07" : v.toFixed(2));
 const fmt = (v: number | null | undefined) => (v === null || v === undefined || Number.isNaN(v) ? "-" : v.toFixed(2));
 
 let panes: Pane[] = [];
@@ -47,6 +51,7 @@ function paneShell(kind: BackendKind): Pane {
   return {
     kind,
     chart: null,
+    device: null,
     el,
     stats: el.querySelector(".stats")!,
     toggle: el.querySelector("button")!,
@@ -57,12 +62,13 @@ function paneShell(kind: BackendKind): Pane {
 
 function note(p: Pane, text: string | null): void {
   const body = p.el.querySelector(".pane-body")!;
-  body.querySelector(".pane-note")?.remove();
+  p.el.querySelector(".pane-note")?.remove();
   if (text === null) return;
   const n = document.createElement("div");
   n.className = "pane-note";
   n.textContent = text;
-  body.appendChild(n);
+  // A strip between the header and the plot, so the text never sits on top of the lines.
+  body.before(n);
 }
 
 function setRunning(p: Pane, run: boolean): void {
@@ -78,6 +84,7 @@ async function factoryFor(p: Pane): Promise<BackendFactory> {
   const kind = p.kind;
   if (kind === "webgpu") {
     const acq = await acquireDevice(undefined, { timestamps: true });
+    p.device = acq.device;
     // v0.1 has no device-lost recovery (spec section 3): stop the pane and say so.
     const onDeviceLost = (msg: string) => {
       setRunning(p, false);
@@ -92,7 +99,10 @@ async function factoryFor(p: Pane): Promise<BackendFactory> {
 
 async function build(points: number, series: number, ingestHz: number): Promise<void> {
   source?.stop();
-  for (const p of panes) p.chart?.destroy();
+  for (const p of panes) {
+    p.chart?.destroy();
+    p.device?.destroy();
+  }
   const host = $("panes");
   host.replaceChildren();
   panes = (["webgpu", "canvas2d", "uplot"] as BackendKind[]).map(paneShell);
@@ -112,6 +122,8 @@ async function build(points: number, series: number, ingestHz: number): Promise<
     try {
       p.chart = await Chart.create(body, await factoryFor(p), { capacity: points, autoStart: false, windowMs: points });
     } catch (e) {
+      p.device?.destroy();
+      p.device = null;
       p.toggle.disabled = true;
       note(p, `Could not start: ${e instanceof Error ? e.message : String(e)}`);
       continue;
@@ -156,7 +168,7 @@ function startReadouts(): void {
   setInterval(() => {
     for (const p of panes) {
       if (!p.chart?.isRunning || !p.last) continue;
-      const gpu = p.kind === "webgpu" ? ` · GPU <b>${fmt(p.lastGpuMs)}</b> ms` : "";
+      const gpu = p.kind === "webgpu" ? ` · GPU pass <b>${fmtGpu(p.lastGpuMs)}</b> ms` : "";
       p.stats.innerHTML = `CPU <b>${fmt(p.last.drawMs)}</b> ms · p95 5 s <b>${fmt(p.last.drawP95Ms)}</b> ms${gpu} · ${p.last.visiblePoints.toLocaleString("en-US")} pts`;
     }
   }, 250);

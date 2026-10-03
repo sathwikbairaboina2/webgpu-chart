@@ -48,3 +48,13 @@ describe("Canvas2DBackend", () => {
     expect(() => new Canvas2DBackend({ width: 1, height: 1, getContext: () => null }, "#000")).toThrow(/unavailable/);
   });
 });
+
+describe("Canvas2DBackend.settled", () => {
+  it("reads a pixel back to force the queued drawing to finish", async () => {
+    const { canvas, ctx } = fakeCanvas();
+    const reads: number[][] = [];
+    ctx.getImageData = (...a: number[]) => reads.push(a);
+    await new Canvas2DBackend(canvas, "#000000").settled();
+    expect(reads).toEqual([[0, 0, 1, 1]]);
+  });
+});

@@ -170,6 +170,16 @@ export class Chart {
     return stats;
   }
 
+  /** Resolves when the backend has finished executing the frames rendered so far. Resolves at once if it cannot tell. */
+  settled(): Promise<void> {
+    return this.backend.settled?.() ?? Promise.resolve();
+  }
+
+  /** GPU pass times recorded since the last call; empty unless the backend times its passes. */
+  drainGpuMs(): Promise<number[]> {
+    return this.backend.drainGpuMs?.() ?? Promise.resolve([]);
+  }
+
   start(): void {
     if (this.running) return;
     this.running = true;

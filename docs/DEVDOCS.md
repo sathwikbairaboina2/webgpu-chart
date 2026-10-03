@@ -6,7 +6,9 @@
 
 Measured headline (from `bench/results/latest.json`):
 
-**4 series x 1M points: p95 frame time 1.12 ms on WebGPU vs 38.25 ms on uPlot and 33.61 ms on Canvas2D** (uncapped rAF, NVIDIA GeForce RTX 4090, AMD Ryzen 9 7900X 12-Core Processor, Chrome 154, measured 2026-10-04).
+<!-- headline:start -->
+**4 series x 1M points: p95 frame time to GPU-complete 6.39 ms on WebGPU vs 46.73 ms on uPlot and 32.58 ms on Canvas2D** (one frame in flight, each frame timed until its GPU work finished, NVIDIA GeForce RTX 4090, AMD Ryzen 9 7900X 12-Core Processor, Chrome 154, measured 2026-10-04).
+<!-- headline:end -->
 
 ## 2. Quickstart (5 minutes)
 
@@ -81,7 +83,7 @@ One frame:
 - [0001 M4 over LTTB](adr/0001-minmax-decimation-over-lttb.md): keeps every spike, gives up LTTB's smoother look.
 - [0002 One invocation per column, exact parity](adr/0002-gpu-kernel-and-exact-parity.md): simple and testable byte for byte, gives up work balance on very uneven data.
 - [0003 GPU tests in host Chrome](adr/0003-gpu-tests-in-host-chrome.md): the only browser here with an adapter, gives up GPU tests in CI.
-- [0004 Benchmark methodology](adr/0004-benchmark-methodology.md): uncapped rAF on a production build, gives up a vsync-realistic number.
+- [0004 Benchmark methodology](adr/0004-benchmark-methodology.md): uncapped rAF on a production build with each frame timed until the GPU finishes it (one frame in flight); gives up a vsync-realistic number and GPU/CPU pipelining.
 - [0005 f32 time and epochs](adr/0005-time-precision-and-epochs.md): halves GPU memory, caps a series at about 4.66 hours.
 - [0006 Toolchain and demo stack](adr/0006-toolchain-and-demo-stack.md): uPlot is a dev dependency only, so the library has no runtime dependencies.
 - [0007 Ingest on the main thread](adr/0007-ingest-on-main-thread.md): no worker yet, gives up isolation from page jank.
@@ -94,4 +96,3 @@ One frame:
 - GPU pass time from timestamp queries is GPU wall time and includes contention when other panes draw.
 - Numbers come from one machine (two GPUs present, the WebGPU adapter is the NVIDIA one).
 - v0.2: device-lost recovery, WebSocket and MQTT adapters, ingest worker, OffscreenCanvas, npm publish, hosted URL, area and band modes, multi-axis, mip-pyramid decimation for 10M+ points.
-- Cosmetic, seen in the GIF: a paused uPlot pane shows its pause message faintly over the chart.

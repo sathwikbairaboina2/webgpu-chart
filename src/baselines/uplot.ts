@@ -72,6 +72,13 @@ export class UPlotBackend implements Backend {
     return { uploadBytes: 0, visiblePoints: visible, gpuMs: null };
   }
 
+  /** uPlot commits in a microtask after setScale; wait for it, then read a pixel back to force the flush. */
+  async settled(): Promise<void> {
+    await Promise.resolve();
+    await Promise.resolve();
+    this.plot?.ctx.getImageData(0, 0, 1, 1);
+  }
+
   destroy(): void {
     this.plot?.destroy();
     this.plot = null;

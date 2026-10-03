@@ -1,7 +1,7 @@
 # webgpu-chart
 
 <!-- headline:start -->
-**4 series x 1M points: p95 frame time 1.12 ms on WebGPU vs 38.25 ms on uPlot and 33.61 ms on Canvas2D** (uncapped rAF, NVIDIA GeForce RTX 4090, AMD Ryzen 9 7900X 12-Core Processor, Chrome 154, measured 2026-10-04).
+**4 series x 1M points: p95 frame time to GPU-complete 6.39 ms on WebGPU vs 46.73 ms on uPlot and 32.58 ms on Canvas2D** (one frame in flight, each frame timed until its GPU work finished, NVIDIA GeForce RTX 4090, AMD Ryzen 9 7900X 12-Core Processor, Chrome 154, measured 2026-10-04).
 <!-- headline:end -->
 
 ![Three panes on the same 4 x 1M point stream: WebGPU stays smooth while Canvas2D and uPlot, when switched on, drag the page frame rate down](docs/demo.gif)
@@ -18,19 +18,21 @@ A streaming time-series chart that decimates millions of points per frame in a W
 
 ## Benchmarks
 
-Measured by `pnpm bench`: production build, host Chrome, uncapped rAF, 1600 x 600 canvas at DPR 1, 600 scripted frames (pan, zoom in 1000x, zoom out, follow with 1 kHz ingest). Method and trade-offs: [ADR 0004](docs/adr/0004-benchmark-methodology.md). The table is generated from `bench/results/latest.json` by `pnpm bench:table`. Do not edit it by hand.
+Measured by `pnpm bench`: production build, host Chrome, uncapped rAF, one frame in flight, 1600 x 600 canvas at DPR 1, 600 scripted frames (pan, zoom in 1000x, zoom out, follow with 1 kHz ingest). Method and trade-offs: [ADR 0004](docs/adr/0004-benchmark-methodology.md). The table is generated from `bench/results/latest.json` by `pnpm bench:table`. Do not edit it by hand.
+
+What the columns mean: p50, p95 and p99 are per frame, from the start of the frame callback (ingest, state update, render) until the GPU, or the canvas, has finished that frame (`queue.onSubmittedWorkDone` for WebGPU, a 1x1 pixel readback for Canvas2D and uPlot). Submit time alone is not used, because a GPU queue can run well behind the CPU. Throughput is the mean time per frame from the first measured frame to the last completion, so it also includes the idle gap before each rAF callback. The GPU compute pass column comes from timestamp queries and covers the decimation pass only, over all frames including the 60 warmup ones; it is shown as n/a when fewer than 30 readings arrived.
 
 <!-- bench:start -->
-| Scenario | Renderer | p50 ms | p95 ms | p99 ms | Frames over 16.7 ms | GPU pass p95 ms |
-|---|---|---|---|---|---|---|
-| 4x1M | WebGPU | 0.37 | 1.12 | 3.37 | 1 / 600 | 0.26 |
-| 4x1M | uPlot | 15.08 | 38.25 | 56.33 | 246 / 600 | n/a |
-| 4x1M | Canvas2D | 13.98 | 33.61 | 47.50 | 178 / 600 | n/a |
-| 4x100k | WebGPU | 0.42 | 1.25 | 3.49 | 0 / 600 | 0.20 |
-| 4x100k | uPlot | 3.77 | 8.39 | 11.81 | 0 / 600 | n/a |
-| 4x100k | Canvas2D | 3.22 | 7.50 | 9.80 | 0 / 600 | n/a |
-| 4x2M | WebGPU | 0.40 | 3.04 | 5.83 | 0 / 600 | 6.09 |
-| 4x5M | WebGPU | 0.47 | 4.45 | 7.38 | 1 / 600 | 15.07 |
+| Scenario | Renderer | p50 ms | p95 ms | p99 ms | Frames over 16.7 ms | Throughput ms/frame | GPU compute pass p95 ms |
+|---|---|---|---|---|---|---|---|
+| 4x1M | WebGPU | 2.16 | 6.39 | 9.01 | 0 / 600 | 6.53 | 0.26 (n=660) |
+| 4x1M | uPlot | 24.82 | 46.73 | 63.58 | 410 / 600 | 24.38 | n/a |
+| 4x1M | Canvas2D | 17.34 | 32.58 | 47.23 | 337 / 600 | 17.52 | n/a |
+| 4x100k | WebGPU | 1.65 | 4.44 | 6.18 | 0 / 600 | 2.08 | 0.13 (n=660) |
+| 4x100k | uPlot | 10.20 | 15.88 | 21.11 | 23 / 600 | 10.74 | n/a |
+| 4x100k | Canvas2D | 5.42 | 9.13 | 12.13 | 1 / 600 | 5.67 | n/a |
+| 4x2M | WebGPU | 1.81 | 5.19 | 7.39 | 0 / 600 | 2.25 | 0.33 (n=660) |
+| 4x5M | WebGPU | 1.98 | 9.37 | 13.81 | 2 / 600 | 2.87 | 5.64 (n=660) |
 <!-- bench:end -->
 
 ## Quickstart

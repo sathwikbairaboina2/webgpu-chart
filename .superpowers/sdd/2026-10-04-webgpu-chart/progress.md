@@ -48,3 +48,11 @@ Ruling: demo GIF visual check done on frames at 2 s and 5 s only (header, 3 pane
 Task 24: complete - docs/demo.gif 4368653 bytes, 15.3 s; pnpm bench:table --check exit 0
 Build: DONE - all 25 tasks complete
 Task 25: complete - docs/DEVDOCS.md, handoff, plan boxes ticked; final gates G1-G7, G10, G11 re-run and pass (test 19 files 82 passed, e2e 2, gpu 4, pack smoke ok, bench:table --check ok, gif 4368653 bytes, no remote)
+Review fix: finding 1 (critical) - runner now awaits queue.onSubmittedWorkDone (WebGPU) or a 1x1 getImageData (Canvas2D, uPlot) per frame with one frame in flight; headline is p95 of callback start to completion (completeMs), throughput reported; re-ran pnpm bench (4x1M p95: WebGPU 6.39 ms, Canvas2D 32.58 ms, uPlot 46.73 ms), regenerated README, rewrote ADR 0004 back-pressure sentence.
+Review fix: finding 2 (important) - GpuTimer uses a ring of 8 query slots and readback buffers; gpuMs n is now 660 per scenario (includes 60 warmup frames); bench-table shows n/a below 30 samples; demo shows "<0.07" instead of 0.00. Tests: tests/timer.test.ts, tests/report.test.ts.
+Review fix: finding 3 (important) - GpuChart owns its device (src/gpu/owned.ts buildOwned): destroyed on destroy and on failed create; demo pane destroys its device on rebuild. Tests: tests/owned.test.ts.
+Review fix: finding 4 (minor) - DEVDOCS headline has markers; pnpm bench:table writes and --check verifies README and DEVDOCS.
+Review fix: finding 5 (minor) - pane note is now an opaque strip between header and plot; GIF re-recorded (3582042 bytes).
+Ruling: GPU pass column covers warmup frames too (n=660) - the timer drains once at run end; splitting needs another hook - cost: small, noted in README.
+Ruling: one frame in flight (not two) - gives the cost of a single frame with no hidden queue; loses pipelining so WebGPU is conservative - cost: headline looks weaker than throughput under pipelining.
+Review fix gates: typecheck ok; pnpm test 21 files 92 passed; build ok; e2e 2 passed; test:gpu 4 passed; pack:smoke ok; bench:table --check ok. G8/G9 not re-run (Docker/CI unchanged).

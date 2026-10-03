@@ -15,7 +15,12 @@ export interface BenchEnv {
 }
 
 export interface RendererResult {
+  /** rAF deltas. Kept for reference; with one frame in flight they include the wait for the previous frame. */
   frameMs: Summary;
+  /** Per frame, callback start until the GPU/canvas work has finished. The headline metric. */
+  completeMs: Summary;
+  /** Mean ms per frame, first start to last completion. */
+  throughputMs: number;
   gpuMs: Summary | null;
   inputHash: string;
   uploadBytes: number;
@@ -50,6 +55,14 @@ const ORDER: BackendKind[] = ["webgpu", "uplot", "canvas2d"];
 
 const ms = (v: number) => v.toFixed(2);
 
+/** GPU pass summaries with fewer samples than this are not shown as a percentile. */
+export const MIN_GPU_SAMPLES = 30;
+
+export function gpuCell(g: Summary | null): string {
+  if (!g) return "n/a";
+  return g.n < MIN_GPU_SAMPLES ? `n/a (only ${g.n} samples)` : `${ms(g.p95)} (n=${g.n})`;
+}
+
 function ok(r: RendererResult | { error: string } | undefined): r is RendererResult {
   return r !== undefined && !("error" in r);
 }
@@ -71,31 +84,31 @@ export function renderHeadline(file: BenchFile): string {
   if (!sc) throw new Error(`bench file has no "${HEADLINE_SCENARIO}" scenario`);
   const p95 = (k: BackendKind) => {
     const r = sc.results[k];
-    return ok(r) ? `${ms(r.frameMs.p95)} ms` : "n/a";
+    return ok(r) ? `${ms(r.completeMs.p95)} ms` : "n/a";
   };
   return (
-    `**${sc.spec.series} series x ${sc.spec.points / 1_000_000}M points: p95 frame time ${p95("webgpu")} on WebGPU ` +
+    `**${sc.spec.series} series x ${sc.spec.points / 1_000_000}M points: p95 frame time to GPU-complete ${p95("webgpu")} on WebGPU ` +
     `vs ${p95("uplot")} on uPlot and ${p95("canvas2d")} on Canvas2D** ` +
-    `(uncapped rAF, ${hardwareLine(file.env)}, measured ${file.date}).`
+    `(one frame in flight, each frame timed until its GPU work finished, ${hardwareLine(file.env)}, measured ${file.date}).`
   );
 }
 
 export function renderTable(file: BenchFile): string {
   const rows = [
-    "| Scenario | Renderer | p50 ms | p95 ms | p99 ms | Frames over 16.7 ms | GPU pass p95 ms |",
-    "|---|---|---|---|---|---|---|",
+    "| Scenario | Renderer | p50 ms | p95 ms | p99 ms | Frames over 16.7 ms | Throughput ms/frame | GPU compute pass p95 ms |",
+    "|---|---|---|---|---|---|---|---|",
   ];
   for (const sc of file.scenarios) {
     for (const k of ORDER) {
       const r = sc.results[k];
       if (r === undefined) continue;
       if (!ok(r)) {
-        rows.push(`| ${sc.name} | ${LABEL[k]} | error: ${r.error} | | | | |`);
+        rows.push(`| ${sc.name} | ${LABEL[k]} | error: ${r.error} | | | | | |`);
         continue;
       }
-      const f = r.frameMs;
+      const f = r.completeMs;
       rows.push(
-        `| ${sc.name} | ${LABEL[k]} | ${ms(f.p50)} | ${ms(f.p95)} | ${ms(f.p99)} | ${f.over16ms} / ${f.n} | ${r.gpuMs ? ms(r.gpuMs.p95) : "n/a"} |`,
+        `| ${sc.name} | ${LABEL[k]} | ${ms(f.p50)} | ${ms(f.p95)} | ${ms(f.p99)} | ${f.over16ms} / ${f.n} | ${ms(r.throughputMs)} | ${gpuCell(r.gpuMs)} |`,
       );
     }
   }
@@ -111,7 +124,8 @@ function replaceBetween(text: string, name: string, body: string): string {
   return `${text.slice(0, a + start.length)}\n${body}\n${text.slice(b)}`;
 }
 
-/** Writes the headline and table between their markers. */
+/** Writes the headline between its markers; the table too when the text has bench markers (README only). */
 export function applyToReadme(readme: string, file: BenchFile): string {
-  return replaceBetween(replaceBetween(readme, "headline", renderHeadline(file)), "bench", renderTable(file));
+  const withHeadline = replaceBetween(readme, "headline", renderHeadline(file));
+  return withHeadline.includes("<!-- bench:start -->") ? replaceBetween(withHeadline, "bench", renderTable(file)) : withHeadline;
 }

@@ -73,7 +73,7 @@ async function main(): Promise<void> {
       scenarios.push(out.result.scenario);
       env ??= out.result.env;
       for (const [k, r] of Object.entries(out.result.scenario.results)) {
-        console.log(`  ${k.padEnd(8)} ${"error" in r ? `error: ${r.error}` : `p50 ${r.frameMs.p50.toFixed(2)} ms  p95 ${r.frameMs.p95.toFixed(2)} ms  p99 ${r.frameMs.p99.toFixed(2)} ms  hash ${r.inputHash}`}`);
+        console.log(`  ${k.padEnd(8)} ${"error" in r ? `error: ${r.error}` : `complete p50 ${r.completeMs.p50.toFixed(2)} ms  p95 ${r.completeMs.p95.toFixed(2)} ms  p99 ${r.completeMs.p99.toFixed(2)} ms  throughput ${r.throughputMs.toFixed(2)} ms/frame  gpu n=${r.gpuMs?.n ?? 0}  hash ${r.inputHash}`}`);
       }
     }
     const date = new Date().toLocaleDateString("en-CA");

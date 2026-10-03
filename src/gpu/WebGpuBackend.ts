@@ -132,7 +132,8 @@ export class WebGpuBackend implements Backend {
       this.device.queue.writeBuffer(s.drawBuffer, 0, this.drawScratch);
     }
     const enc = this.device.createCommandEncoder();
-    const cp = enc.beginComputePass(this.timer ? { timestampWrites: this.timer.timestampWrites } : {});
+    const writes = this.timer?.begin();
+    const cp = enc.beginComputePass(writes ? { timestampWrites: writes } : {});
     for (const s of this.series) this.decimator.encode(cp, s.gpu);
     cp.end();
     this.timer?.resolve(enc);
@@ -148,6 +149,16 @@ export class WebGpuBackend implements Backend {
     this.device.queue.submit([enc.finish()]);
     this.timer?.collect();
     return { uploadBytes, visiblePoints, gpuMs: this.timer?.take() ?? null };
+  }
+
+  /** Resolves when the GPU has finished everything submitted so far. */
+  settled(): Promise<void> {
+    return this.device.queue.onSubmittedWorkDone();
+  }
+
+  /** Every GPU pass time recorded since the last call, oldest first. Empty without timestamp queries. */
+  drainGpuMs(): Promise<number[]> {
+    return this.timer?.drain() ?? Promise.resolve([]);
   }
 
   /** Test hook: bucket records of series `index` from the last frame. Slow; never call in a render loop. */

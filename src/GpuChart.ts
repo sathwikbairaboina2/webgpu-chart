@@ -3,6 +3,7 @@ import type { FrameStats } from "./chart/backend";
 import type { IngestReport } from "./core/ingest";
 import type { Viewport } from "./core/viewport";
 import { acquireDevice } from "./gpu/device";
+import { buildOwned } from "./gpu/owned";
 import { isSupported, type SupportResult } from "./gpu/support";
 import { WebGpuBackend } from "./gpu/WebGpuBackend";
 
@@ -20,7 +21,10 @@ export interface SeriesHandle {
 
 /** Public WebGPU chart. Wraps a Chart with the WebGPU backend. */
 export class GpuChart {
-  private constructor(private readonly chart: Chart) {}
+  private constructor(
+    private readonly chart: Chart,
+    private readonly release: () => void,
+  ) {}
 
   static isSupported(): Promise<SupportResult> {
     return isSupported();
@@ -29,20 +33,23 @@ export class GpuChart {
   static async create(container: HTMLElement, options: ChartOptions = {}): Promise<GpuChart> {
     const acquired = await acquireDevice(undefined, { timestamps: options.gpuTiming });
     let chart: Chart | null = null;
-    chart = await Chart.create(
-      container,
-      (host, theme) =>
-        WebGpuBackend.create(host, acquired, {
-          background: theme.background,
-          gpuTiming: options.gpuTiming,
-          onDeviceLost: (msg) => {
-            chart?.stop();
-            chart?.emitError(new Error(`GPU device lost: ${msg}`));
-          },
-        }),
-      options,
+    // GpuChart owns the device it acquired: it is destroyed with the chart, or at once if creating the chart fails.
+    const owned = await buildOwned(acquired.device, () =>
+      Chart.create(
+        container,
+        (host, theme) =>
+          WebGpuBackend.create(host, acquired, {
+            background: theme.background,
+            gpuTiming: options.gpuTiming,
+            onDeviceLost: (msg) => {
+              chart?.stop();
+              chart?.emitError(new Error(`GPU device lost: ${msg}`));
+            },
+          }),
+        options,
+      ).then((c) => (chart = c)),
     );
-    return new GpuChart(chart);
+    return new GpuChart(owned.value, owned.release);
   }
 
   addSeries(options: SeriesOptions): SeriesHandle {
@@ -73,6 +80,6 @@ export class GpuChart {
   }
 
   destroy(): void {
-    this.chart.destroy();
+    this.release();
   }
 }

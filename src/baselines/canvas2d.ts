@@ -14,6 +14,8 @@ export interface Ctx2D {
   moveTo(x: number, y: number): void;
   lineTo(x: number, y: number): void;
   stroke(): void;
+  /** Reading a pixel back forces the browser to finish queued drawing. */
+  getImageData?(sx: number, sy: number, sw: number, sh: number): unknown;
 }
 
 export interface Canvas2DLike {
@@ -88,6 +90,11 @@ export class Canvas2DBackend implements Backend {
       ctx.stroke();
     }
     return { uploadBytes: 0, visiblePoints: visible, gpuMs: null };
+  }
+
+  settled(): Promise<void> {
+    this.ctx.getImageData?.(0, 0, 1, 1);
+    return Promise.resolve();
   }
 
   destroy(): void {

@@ -87,3 +87,59 @@ describe("runRenderer fairness (invariant 9)", () => {
     await expect(run).rejects.toThrow(/hidden/);
   });
 });
+
+describe("runRenderer measures completion, not submission", () => {
+  // A chart whose frame() returns instantly but whose work finishes `gpuCost` ms of fake time later.
+  function queuedChart(clock: { t: number }, gpuCost: number, track: { open: number; maxOpen: number }): BenchChart {
+    const base = fakeChart([]);
+    return {
+      model: base.model,
+      frame: base.frame,
+      settled: () => {
+        track.open++;
+        track.maxOpen = Math.max(track.maxOpen, track.open);
+        return new Promise<void>((res) =>
+          setTimeout(() => {
+            clock.t += gpuCost;
+            track.open--;
+            res();
+          }, 0),
+        );
+      },
+      drainGpuMs: async () => [1, 2, 3],
+    };
+  }
+
+  it("reports the GPU wait in completeMs and keeps one frame in flight", async () => {
+    const script = makeScript({ frames: 12, startMs: 0, points: 1000, stepMs: 1, ingestHz: 1000 });
+    const data = makeDataset({ seed: 3, series: 2, points: 1000 + totalAppend(script), startMs: 0, stepMs: 1 });
+    const clock = { t: 0 };
+    const track = { open: 0, maxOpen: 0 };
+    const run = await runRenderer(queuedChart(clock, 40, track), data, 1000, script, {
+      seriesIds: ["s0", "s1"],
+      warmupFrames: 2,
+      raf: fakeRaf(1),
+      now: () => clock.t,
+    });
+    expect(track.maxOpen).toBe(1);
+    expect(run.completeMs.n).toBe(script.length);
+    expect(run.completeMs.p50).toBe(40);
+    expect(run.completeMs.p95).toBe(40);
+    expect(run.frameMs.p95).toBe(1);
+    expect(run.throughputMs).toBe(40);
+    expect(run.gpuMs?.n).toBe(3);
+  });
+
+  it("allows the requested number of frames in flight", async () => {
+    const script = makeScript({ frames: 12, startMs: 0, points: 1000, stepMs: 1, ingestHz: 1000 });
+    const data = makeDataset({ seed: 3, series: 2, points: 1000 + totalAppend(script), startMs: 0, stepMs: 1 });
+    const track = { open: 0, maxOpen: 0 };
+    await runRenderer(queuedChart({ t: 0 }, 1, track), data, 1000, script, {
+      seriesIds: ["s0", "s1"],
+      warmupFrames: 0,
+      raf: fakeRaf(1),
+      maxInFlight: 2,
+    });
+    expect(track.maxOpen).toBe(2);
+  });
+});

@@ -29,6 +29,10 @@ export interface Backend {
   /** Plot size in device pixels. */
   resize(widthPx: number, heightPx: number): void;
   render(frame: FrameInput): RenderStats;
+  /** Resolves once the work from earlier render calls has finished executing, not just been submitted. The bench needs it. */
+  settled?(): Promise<void>;
+  /** Every GPU pass time recorded since the last call. */
+  drainGpuMs?(): Promise<number[]>;
   destroy(): void;
 }
 

@@ -37,3 +37,4 @@ Ruling: Task 17 step 4 (look at the demo) checked headlessly only: host Chrome l
 Task 17: complete - pnpm e2e 2 passed; pnpm test:gpu 3 passed; pnpm test 17 files 72 passed; typecheck 0
 Task 18: complete - pnpm test 19 files 82 passed; pnpm typecheck exit 0
 Task 19: complete - pnpm test:gpu 4 passed; pnpm build:demo exit 0; pnpm bench -- --quick wrote quick.json with one shared hash across 3 renderers (smoke only, numbers not recorded)
+Task 20: complete - pnpm build exit 0 (index.js 48.09 kB, 0 uplot refs); pnpm pack:smoke printed consumer typecheck ok without @webgpu/types

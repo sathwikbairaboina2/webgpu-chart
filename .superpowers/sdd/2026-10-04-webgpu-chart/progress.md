@@ -44,3 +44,5 @@ Gates (Task 22): G1 pnpm typecheck exit 0; G2 pnpm test 19 files 82 passed; G3 p
 Task 22: complete - G1-G6, G8, G9, port and secret greps pass (see Gates line)
 Ruling: bench ran on Windows power plan Balanced (powercfg /getactivescheme), no other automation running - cost if wrong: numbers may be slightly pessimistic
 Task 23: complete - pnpm bench ran 4 scenarios, 600 frames each, one inputHash per scenario across renderers, coi true; pnpm bench:table --check ok; headline: **4 series x 1M points: p95 frame time 1.12 ms on WebGPU vs 38.25 ms on uPlot and 33.61 ms on Canvas2D** (uncapped rAF, NVIDIA GeForce RTX 4090, AMD Ryzen 9 7900X 12-Core Processor, Chrome 154, measured 2026-10-04).
+Ruling: demo GIF visual check done on frames at 2 s and 5 s only (header, 3 panes, 4 colored series, page fps 120 then 15 with Canvas2D on). Seen but not fixed: the paused uPlot pane shows its pause message faintly over the chart, and the stats label reads 'p95 5 s'. Left for review - cost: cosmetic
+Task 24: complete - docs/demo.gif 4368653 bytes, 15.3 s; pnpm bench:table --check exit 0

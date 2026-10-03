@@ -1,0 +1,230 @@
+{
+  "schema": 1,
+  "date": "2026-10-04",
+  "env": {
+    "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+    "adapter": {
+      "vendor": "nvidia",
+      "architecture": "lovelace",
+      "description": ""
+    },
+    "gpuNames": [
+      "NVIDIA GeForce RTX 4090",
+      "AMD Radeon(TM) Graphics"
+    ],
+    "cpu": "AMD Ryzen 9 7900X 12-Core Processor",
+    "os": "Windows_NT 10.0.26200",
+    "dpr": 1,
+    "canvas": [
+      1600,
+      600
+    ],
+    "crossOriginIsolated": true,
+    "chromeArgs": [
+      "--disable-frame-rate-limit",
+      "--disable-gpu-vsync"
+    ]
+  },
+  "scenarios": [
+    {
+      "name": "4x1M",
+      "spec": {
+        "points": 1000000,
+        "series": 4,
+        "frames": 600,
+        "warmup": 60,
+        "ingestHz": 1000,
+        "seed": 42,
+        "script": "pan-zoom-follow-v1"
+      },
+      "results": {
+        "webgpu": {
+          "frameMs": {
+            "n": 600,
+            "p50": 0.3650000000000091,
+            "p95": 1.1199999999998909,
+            "p99": 3.3700000000001182,
+            "mean": 0.5480000000000003,
+            "max": 20.569999999999936,
+            "over16ms": 1
+          },
+          "gpuMs": {
+            "n": 3,
+            "p50": 0.262144,
+            "p95": 0.262144,
+            "p99": 0.262144,
+            "mean": 0.19660799999999998,
+            "max": 0.262144,
+            "over16ms": 0
+          },
+          "inputHash": "fd8c6d23",
+          "uploadBytes": 80000
+        },
+        "canvas2d": {
+          "frameMs": {
+            "n": 600,
+            "p50": 13.975000000000364,
+            "p95": 33.60500000000138,
+            "p99": 47.5,
+            "mean": 13.614791666666667,
+            "max": 63.960000000000036,
+            "over16ms": 178
+          },
+          "gpuMs": null,
+          "inputHash": "fd8c6d23",
+          "uploadBytes": 0
+        },
+        "uplot": {
+          "frameMs": {
+            "n": 600,
+            "p50": 15.075000000000728,
+            "p95": 38.25,
+            "p99": 56.33499999999913,
+            "mean": 15.725191666666666,
+            "max": 95.53000000000247,
+            "over16ms": 246
+          },
+          "gpuMs": null,
+          "inputHash": "fd8c6d23",
+          "uploadBytes": 0
+        }
+      }
+    },
+    {
+      "name": "4x100k",
+      "spec": {
+        "points": 100000,
+        "series": 4,
+        "frames": 600,
+        "warmup": 60,
+        "ingestHz": 1000,
+        "seed": 42,
+        "script": "pan-zoom-follow-v1"
+      },
+      "results": {
+        "webgpu": {
+          "frameMs": {
+            "n": 600,
+            "p50": 0.4199999999999591,
+            "p95": 1.2450000000000045,
+            "p99": 3.4850000000000136,
+            "mean": 0.5603916666666667,
+            "max": 9.355000000000018,
+            "over16ms": 0
+          },
+          "gpuMs": {
+            "n": 2,
+            "p50": 0.131072,
+            "p95": 0.196608,
+            "p99": 0.196608,
+            "mean": 0.16383999999999999,
+            "max": 0.196608,
+            "over16ms": 0
+          },
+          "inputHash": "3a8469a7",
+          "uploadBytes": 80000
+        },
+        "canvas2d": {
+          "frameMs": {
+            "n": 600,
+            "p50": 3.2200000000000273,
+            "p95": 7.5,
+            "p99": 9.795000000000073,
+            "mean": 3.359233333333333,
+            "max": 13.050000000000182,
+            "over16ms": 0
+          },
+          "gpuMs": null,
+          "inputHash": "3a8469a7",
+          "uploadBytes": 0
+        },
+        "uplot": {
+          "frameMs": {
+            "n": 600,
+            "p50": 3.7650000000003274,
+            "p95": 8.385000000000218,
+            "p99": 11.805000000000291,
+            "mean": 3.8249666666666657,
+            "max": 14.349999999999454,
+            "over16ms": 0
+          },
+          "gpuMs": null,
+          "inputHash": "3a8469a7",
+          "uploadBytes": 0
+        }
+      }
+    },
+    {
+      "name": "4x2M",
+      "spec": {
+        "points": 2000000,
+        "series": 4,
+        "frames": 600,
+        "warmup": 60,
+        "ingestHz": 1000,
+        "seed": 42,
+        "script": "pan-zoom-follow-v1"
+      },
+      "results": {
+        "webgpu": {
+          "frameMs": {
+            "n": 600,
+            "p50": 0.40000000000009095,
+            "p95": 3.0399999999999636,
+            "p99": 5.8250000000000455,
+            "mean": 0.8140249999999999,
+            "max": 15.634999999999991,
+            "over16ms": 0
+          },
+          "gpuMs": {
+            "n": 2,
+            "p50": 0.458752,
+            "p95": 6.094848,
+            "p99": 6.094848,
+            "mean": 3.2767999999999997,
+            "max": 6.094848,
+            "over16ms": 0
+          },
+          "inputHash": "08792e57",
+          "uploadBytes": 80000
+        }
+      }
+    },
+    {
+      "name": "4x5M",
+      "spec": {
+        "points": 5000000,
+        "series": 4,
+        "frames": 600,
+        "warmup": 60,
+        "ingestHz": 1000,
+        "seed": 42,
+        "script": "pan-zoom-follow-v1"
+      },
+      "results": {
+        "webgpu": {
+          "frameMs": {
+            "n": 600,
+            "p50": 0.4650000000001455,
+            "p95": 4.449999999999818,
+            "p99": 7.375,
+            "mean": 1.08,
+            "max": 18.519999999999982,
+            "over16ms": 1
+          },
+          "gpuMs": {
+            "n": 2,
+            "p50": 0.589824,
+            "p95": 15.07328,
+            "p99": 15.07328,
+            "mean": 7.831552,
+            "max": 15.07328,
+            "over16ms": 0
+          },
+          "inputHash": "f890cb9b",
+          "uploadBytes": 80000
+        }
+      }
+    }
+  ]
+}

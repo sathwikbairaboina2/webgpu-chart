@@ -118,7 +118,7 @@ webgpu-chart/
 **Interfaces:**
 - Produces: scripts `pnpm test`, `pnpm typecheck`, `pnpm dev` (port 5430) and the rest used by later tasks. `pnpm build` fails until Task 20 (it needs `bench.html` from Task 19 and `vite.lib.config.ts` from Task 20). That is expected. Use `pnpm typecheck` and `pnpm test` until then.
 
-- [ ] **Step 1: Create `package.json`**
+- [x] **Step 1: Create `package.json`**
 
 ```json
 {
@@ -162,7 +162,7 @@ webgpu-chart/
 }
 ```
 
-- [ ] **Step 2: Install pinned dependencies and the bundled Chromium**
+- [x] **Step 2: Install pinned dependencies and the bundled Chromium**
 
 ```bash
 pnpm add -D -E typescript@7.0.2 vite@8.3.2 vitest@5.0.3 fast-check@4.10.2 @playwright/test@1.63.0 @webgpu/types@0.1.74 tsx@4.23.15 @types/node@26.6.4 uplot@1.6.32
@@ -171,7 +171,7 @@ pnpm exec playwright install chromium
 
 Expected: `pnpm-lock.yaml` is created and `package.json` gains a `devDependencies` block with exact versions (no `^`). uPlot is a dev dependency on purpose: the published library has no runtime dependencies (ADR 0006). The Playwright install either downloads Chromium or reports it is already present.
 
-- [ ] **Step 3: Create the configs**
+- [x] **Step 3: Create the configs**
 
 `tsconfig.json`:
 
@@ -267,7 +267,7 @@ bench/results/quick.json
 
 `LICENSE`: the standard MIT license text with the line `Copyright (c) 2026 Sathwik`.
 
-- [ ] **Step 4: Write the failing smoke test**
+- [x] **Step 4: Write the failing smoke test**
 
 `tests/smoke.test.ts`:
 
@@ -287,7 +287,7 @@ describe("scaffold", () => {
 Run: `pnpm test`
 Expected: FAIL. `tests/smoke.test.ts` cannot resolve `../src/index`.
 
-- [ ] **Step 5: Create `src/index.ts`**
+- [x] **Step 5: Create `src/index.ts`**
 
 ```ts
 // Public entry of @sathwik/gpu-timeseries. Task 15 fills in the exports.
@@ -300,7 +300,7 @@ Expected: `Test Files  1 passed (1)`, `Tests  1 passed (1)`.
 Run: `pnpm typecheck`
 Expected: exit 0, no output.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 Check `git status --short` first: no `node_modules`, `dist` or other ignored paths may be listed.
 
@@ -320,7 +320,7 @@ git commit -m "chore: scaffold library, demo and test tooling" -m "Co-Authored-B
 **Interfaces:**
 - Produces: `mulberry32(seed): () => number`; `class Walk(seed, level = 0) { next(): number }`; `makeDataset(spec: DatasetSpec): SeriesData[]` with `DatasetSpec { seed, series, points, startMs, stepMs }` and `SeriesData { t: Float64Array; y: Float32Array }` (all series share one `t` array); `yExtent(data): [number, number]`; constants `SPIKE_PROBABILITY`, `SPIKE_HEIGHT`, `WALK_STEP`, `REVERSION`.
 
-- [ ] **Step 1: Write the failing test** `tests/dataset.test.ts`:
+- [x] **Step 1: Write the failing test** `tests/dataset.test.ts`:
 
 ```ts
 import { describe, expect, it } from "vitest";
@@ -374,12 +374,12 @@ describe("makeDataset", () => {
 });
 ```
 
-- [ ] **Step 2: Run it**
+- [x] **Step 2: Run it**
 
 Run: `pnpm test`
 Expected: FAIL. `tests/dataset.test.ts` cannot resolve `../src/core/prng`.
 
-- [ ] **Step 3: Implement** `src/core/prng.ts`:
+- [x] **Step 3: Implement** `src/core/prng.ts`:
 
 ```ts
 /** Deterministic 32-bit PRNG (mulberry32). Each call returns a float in [0, 1). */
@@ -479,12 +479,12 @@ export function yExtent(data: SeriesData[]): [number, number] {
 }
 ```
 
-- [ ] **Step 4: Run tests**
+- [x] **Step 4: Run tests**
 
 Run: `pnpm test`
 Expected: `Test Files  2 passed (2)`, `Tests  5 passed (5)`. Then `pnpm typecheck`: exit 0.
 
-- [ ] **Step 5: Commit** `feat(core): seeded prng, random walk and datasets` (add the three files plus the ledger).
+- [x] **Step 5: Commit** `feat(core): seeded prng, random walk and datasets` (add the three files plus the ledger).
 
 ---
 
@@ -498,7 +498,7 @@ Expected: `Test Files  2 passed (2)`, `Tests  5 passed (5)`. Then `pnpm typechec
 - Produces: `MAX_SPAN_MS = 16_777_216`; `canonicalY(y): number`; `interface DirtyRange { start; end }` (physical slots); `interface IndexRange { start; end }` (logical, 0 = oldest); `class Ring(capacity)` with fields `capacity, data: Float32Array (interleaved t,y), head, count, epoch, rebases, yMin, yMax, version`, getter `oldest`, and methods `physical(k)`, `tRel(k)`, `y(k)`, `tAbs(k)`, `firstT()` (+Infinity when empty), `lastT()` (-Infinity when empty), `append(t, y)`, `takeDirty(): DirtyRange[]`, `visibleRange(t0Abs, t1Abs): IndexRange`.
 - Contract: callers pass finite, non-decreasing `t` (Task 7's `validateBatch` guarantees it). `takeDirty()` has one consumer (the GPU uploader).
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `tests/ring.property.test.ts` (invariant 3):
 
@@ -690,12 +690,12 @@ describe("Ring epochs (invariant 6)", () => {
 });
 ```
 
-- [ ] **Step 2: Run them**
+- [x] **Step 2: Run them**
 
 Run: `pnpm test`
 Expected: FAIL. The three ring test files cannot resolve `../src/core/ring`.
 
-- [ ] **Step 3: Implement** `src/core/ring.ts`:
+- [x] **Step 3: Implement** `src/core/ring.ts`:
 
 ```ts
 /** Largest span of relative time a ring holds: 2^24 ms (about 4.66 h). f32 is exact for integers below it. */
@@ -886,12 +886,12 @@ export class Ring {
 }
 ```
 
-- [ ] **Step 4: Run tests**
+- [x] **Step 4: Run tests**
 
 Run: `pnpm test`
 Expected: `Test Files  5 passed (5)`, `Tests  17 passed (17)`. Then `pnpm typecheck`: exit 0.
 
-- [ ] **Step 5: Commit** `feat(core): ring buffer with dirty ranges, range search and epochs`.
+- [x] **Step 5: Commit** `feat(core): ring buffer with dirty ranges, range search and epochs`.
 
 ---
 
@@ -905,7 +905,7 @@ Expected: `Test Files  5 passed (5)`, `Tests  17 passed (17)`. Then `pnpm typech
 - Consumes: `Ring` (Task 3).
 - Produces: `BUCKET_FLOATS = 8`, `BUCKET_BYTES = 32`, `MIN_SPAN_MS = 1e-3`; `interface DecimateParams { t0; scale; width; start; end }`; `interface Buckets { width; buffer: ArrayBuffer; f32: Float32Array; u32: Uint32Array }`; `createBuckets(width)`; `makeParams(ring, view: { t0; t1 }, width): DecimateParams`; `columnOf(t, t0, scale, width): number`; `decimate(ring, params, out?): Buckets`. Bucket record layout per column: `[minY, maxY, firstY, lastY]` as f32, then `n` as u32 at word 4, words 5-7 zero. Empty columns are all-zero bytes. This exact layout is what `decimate.wgsl` writes (Task 13).
 
-- [ ] **Step 1: Write the failing test** `tests/decimate.test.ts` (includes invariant 2):
+- [x] **Step 1: Write the failing test** `tests/decimate.test.ts` (includes invariant 2):
 
 ```ts
 import { describe, expect, it } from "vitest";
@@ -1011,12 +1011,12 @@ describe("decimate spike property (invariant 2)", () => {
 });
 ```
 
-- [ ] **Step 2: Run it**
+- [x] **Step 2: Run it**
 
 Run: `pnpm test`
 Expected: FAIL. `tests/decimate.test.ts` cannot resolve `../src/core/decimate`.
 
-- [ ] **Step 3: Implement** `src/core/decimate.ts`:
+- [x] **Step 3: Implement** `src/core/decimate.ts`:
 
 ```ts
 import type { Ring } from "./ring";
@@ -1100,12 +1100,12 @@ export function decimate(ring: Ring, p: DecimateParams, out: Buckets = createBuc
 }
 ```
 
-- [ ] **Step 4: Run tests**
+- [x] **Step 4: Run tests**
 
 Run: `pnpm test`
 Expected: `Test Files  6 passed (6)`, `Tests  24 passed (24)`. Then `pnpm typecheck`: exit 0.
 
-- [ ] **Step 5: Commit** `feat(core): cpu reference m4 decimation`.
+- [x] **Step 5: Commit** `feat(core): cpu reference m4 decimation`.
 
 ---
 
@@ -1119,7 +1119,7 @@ Expected: `Test Files  6 passed (6)`, `Tests  24 passed (24)`. Then `pnpm typech
 - Consumes: `Buckets`, `BUCKET_FLOATS` (Task 4).
 - Produces: `interface YMap { yMin; yMax; heightPx }`; `yToPx(y, m)`; `segmentCapacity(width)`; `segmentsInto(b, m, maxGapPx, out: Float32Array): number` (segment count); `segmentsFromBuckets(b, m, maxGapPx): Float32Array` (`[x0, y0, x1, y1]` per segment, pixel space, row 0 at the top). `segments.wgsl` (Task 14) implements the same rule.
 
-- [ ] **Step 1: Write the failing test** `tests/segments.test.ts`:
+- [x] **Step 1: Write the failing test** `tests/segments.test.ts`:
 
 ```ts
 import { describe, expect, it } from "vitest";
@@ -1163,12 +1163,12 @@ describe("segmentsFromBuckets", () => {
 });
 ```
 
-- [ ] **Step 2: Run it**
+- [x] **Step 2: Run it**
 
 Run: `pnpm test`
 Expected: FAIL. `tests/segments.test.ts` cannot resolve `../src/core/segments`.
 
-- [ ] **Step 3: Implement** `src/core/segments.ts`:
+- [x] **Step 3: Implement** `src/core/segments.ts`:
 
 ```ts
 import { BUCKET_FLOATS, type Buckets } from "./decimate";
@@ -1231,12 +1231,12 @@ export function segmentsFromBuckets(b: Buckets, m: YMap, maxGapPx: number): Floa
 }
 ```
 
-- [ ] **Step 4: Run tests**
+- [x] **Step 4: Run tests**
 
 Run: `pnpm test`
 Expected: `Test Files  7 passed (7)`, `Tests  28 passed (28)`.
 
-- [ ] **Step 5: Commit** `feat(core): segment rule for decimated columns`.
+- [x] **Step 5: Commit** `feat(core): segment rule for decimated columns`.
 
 ---
 
@@ -1249,7 +1249,7 @@ Expected: `Test Files  7 passed (7)`, `Tests  28 passed (28)`.
 **Interfaces:**
 - Produces: `niceStep(span, maxTicks)`, `niceTicks(min, max, maxTicks = 6): number[]`, `TIME_STEPS`, `timeStep(spanMs, maxTicks)`, `timeTicks(t0, t1, maxTicks = 8, tzOffsetMs = 0): { step; ticks }`, `formatTime(t, step, utc = false)`, `formatValue(v, step)`.
 
-- [ ] **Step 1: Write the failing test** `tests/ticks.test.ts`:
+- [x] **Step 1: Write the failing test** `tests/ticks.test.ts`:
 
 ```ts
 import { describe, expect, it } from "vitest";
@@ -1299,12 +1299,12 @@ describe("timeTicks", () => {
 });
 ```
 
-- [ ] **Step 2: Run it**
+- [x] **Step 2: Run it**
 
 Run: `pnpm test`
 Expected: FAIL. `tests/ticks.test.ts` cannot resolve `../src/core/ticks`.
 
-- [ ] **Step 3: Implement** `src/core/ticks.ts`:
+- [x] **Step 3: Implement** `src/core/ticks.ts`:
 
 ```ts
 /** 1, 2 or 5 times a power of ten, at least span / maxTicks. */
@@ -1392,12 +1392,12 @@ export function formatValue(v: number, step: number): string {
 }
 ```
 
-- [ ] **Step 4: Run tests**
+- [x] **Step 4: Run tests**
 
 Run: `pnpm test`
 Expected: `Test Files  8 passed (8)`, `Tests  34 passed (34)`.
 
-- [ ] **Step 5: Commit** `feat(core): nice value and time ticks`.
+- [x] **Step 5: Commit** `feat(core): nice value and time ticks`.
 
 ---
 
@@ -1411,7 +1411,7 @@ Expected: `Test Files  8 passed (8)`, `Tests  34 passed (34)`.
 - Consumes: `Ring` (in the test only).
 - Produces: `type OrderPolicy = "drop" | "clamp-to-last"`; `interface IngestReport { accepted; droppedNonFinite; droppedOutOfOrder; clamped }`; `interface ValidatedBatch { t: Float64Array; y: Float32Array; report }`; `validateBatch(t, y, lastT, policy = "drop"): ValidatedBatch`.
 
-- [ ] **Step 1: Write the failing test** `tests/ingest.test.ts` (invariant 5):
+- [x] **Step 1: Write the failing test** `tests/ingest.test.ts` (invariant 5):
 
 ```ts
 import { describe, expect, it } from "vitest";
@@ -1454,12 +1454,12 @@ describe("validateBatch (invariant 5)", () => {
 });
 ```
 
-- [ ] **Step 2: Run it**
+- [x] **Step 2: Run it**
 
 Run: `pnpm test`
 Expected: FAIL. `tests/ingest.test.ts` cannot resolve `../src/core/ingest`.
 
-- [ ] **Step 3: Implement** `src/core/ingest.ts`:
+- [x] **Step 3: Implement** `src/core/ingest.ts`:
 
 ```ts
 /** What to do with a sample whose t is before the last accepted t. */
@@ -1525,12 +1525,12 @@ export function validateBatch(
 }
 ```
 
-- [ ] **Step 4: Run tests**
+- [x] **Step 4: Run tests**
 
 Run: `pnpm test`
 Expected: `Test Files  9 passed (9)`, `Tests  39 passed (39)`.
 
-- [ ] **Step 5: Commit** `feat(core): ingest validation policies`.
+- [x] **Step 5: Commit** `feat(core): ingest validation policies`.
 
 ---
 
@@ -1543,7 +1543,7 @@ Expected: `Test Files  9 passed (9)`, `Tests  39 passed (39)`.
 **Interfaces:**
 - Produces: `interface Viewport { t0; t1 }`, `interface Bounds { min; max }`, `MIN_VIEW_SPAN_MS = 1`, `clampView`, `zoomAt(v, anchor, factor, b, minSpan?)` (factor above 1 zooms out), `panBy`, `followView(latest, windowMs)`, `pxToTime(px, widthPx, v)`; `percentile(sorted, p)` (nearest rank), `BUDGET_60HZ_MS`, `interface Summary { n; p50; p95; p99; mean; max; over16ms }`, `summarize(samples)`, `class RollingWindow(windowMs) { push(now, value); size; percentile(p) }`.
 
-- [ ] **Step 1: Write the failing test** `tests/viewport.test.ts`:
+- [x] **Step 1: Write the failing test** `tests/viewport.test.ts`:
 
 ```ts
 import { describe, expect, it } from "vitest";
@@ -1605,12 +1605,12 @@ describe("stats", () => {
 });
 ```
 
-- [ ] **Step 2: Run it**
+- [x] **Step 2: Run it**
 
 Run: `pnpm test`
 Expected: FAIL. `tests/viewport.test.ts` cannot resolve `../src/core/viewport`.
 
-- [ ] **Step 3: Implement** `src/core/viewport.ts`:
+- [x] **Step 3: Implement** `src/core/viewport.ts`:
 
 ```ts
 /** Visible time window, absolute ms. */
@@ -1729,12 +1729,12 @@ export class RollingWindow {
 }
 ```
 
-- [ ] **Step 4: Run tests**
+- [x] **Step 4: Run tests**
 
 Run: `pnpm test`
 Expected: `Test Files  10 passed (10)`, `Tests  47 passed (47)`.
 
-- [ ] **Step 5: Commit** `feat(core): viewport math and frame statistics`.
+- [x] **Step 5: Commit** `feat(core): viewport math and frame statistics`.
 
 ---
 
@@ -1752,7 +1752,7 @@ Expected: `Test Files  10 passed (10)`, `Tests  47 passed (47)`.
   - `uniforms.ts`: `VIEW_BYTES = 32`, `DRAW_BYTES = 48`, `type Rgba`, `packView(params, oldest, capacity, out?)`, `interface DrawParams`, `packDraw(d, out?)`, `parseColor(hex): Rgba`.
   - `upload.ts`: `interface QueueLike`, `SAMPLE_BYTES = 8`, `uploadDirty(queue, buffer, ring): number` (bytes).
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `tests/gpu-helpers.test.ts`:
 
@@ -1899,12 +1899,12 @@ describe("uploadDirty (invariant 7)", () => {
 });
 ```
 
-- [ ] **Step 2: Run them**
+- [x] **Step 2: Run them**
 
 Run: `pnpm test`
 Expected: FAIL. Both files cannot resolve their `../src/gpu/...` imports.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 `src/gpu/support.ts`:
 
@@ -2095,12 +2095,12 @@ export function uploadDirty(queue: QueueLike, buffer: GPUBuffer, ring: Ring): nu
 }
 ```
 
-- [ ] **Step 4: Run tests**
+- [x] **Step 4: Run tests**
 
 Run: `pnpm test`
 Expected: `Test Files  12 passed (12)`, `Tests  57 passed (57)`. Then `pnpm typecheck`: exit 0.
 
-- [ ] **Step 5: Commit** `feat(gpu): support check, device acquisition, uniform packing, dirty uploads`.
+- [x] **Step 5: Commit** `feat(gpu): support check, device acquisition, uniform packing, dirty uploads`.
 
 ---
 
@@ -2116,7 +2116,7 @@ Expected: `Test Files  12 passed (12)`, `Tests  57 passed (57)`. Then `pnpm type
   - `backend.ts`: `type BackendKind = "webgpu" | "canvas2d" | "uplot"`, `interface FrameInput { view; yRange; lineWidthPx; maxGapPx }`, `interface RenderStats { uploadBytes; visiblePoints; gpuMs: number | null }`, `interface Backend { kind; drawsOwnAxes; addSeries(ring, color); onAppend?(index, t, y); resize(widthPx, heightPx); render(frame): RenderStats; destroy() }`, `interface FrameStats { kind; frameMs; drawMs; drawP95Ms; gpuMs; visiblePoints; uploadBytes }`.
   - `model.ts`: `MAX_SERIES = 8`, `DEFAULT_COLORS`, `interface ModelOptions { capacity; windowMs; orderPolicy }`, `interface SeriesEntry { id; color; ring }`, `type AppendListener`, `class ChartModel` with `series`, `windowMs`, `onAppend(fn)`, `addSeries(id, color?)`, `append(id, t, y): IngestReport`, `following`, `setViewport(v | "follow")`, `setYRange(r | "auto")`, `bounds()`, `latest()`, `resolveView()`, `resolveY()`, `zoomAtPx(px, widthPx, factor)`, `panPx(dxPx, widthPx)`.
 
-- [ ] **Step 1: Write the failing test** `tests/model.test.ts`:
+- [x] **Step 1: Write the failing test** `tests/model.test.ts`:
 
 ```ts
 import { describe, expect, it } from "vitest";
@@ -2185,12 +2185,12 @@ describe("ChartModel", () => {
 });
 ```
 
-- [ ] **Step 2: Run it**
+- [x] **Step 2: Run it**
 
 Run: `pnpm test`
 Expected: FAIL. `tests/model.test.ts` cannot resolve `../src/chart/model`.
 
-- [ ] **Step 3: Implement** `src/chart/backend.ts`:
+- [x] **Step 3: Implement** `src/chart/backend.ts`:
 
 ```ts
 import type { Ring } from "../core/ring";
@@ -2364,12 +2364,12 @@ export class ChartModel {
 }
 ```
 
-- [ ] **Step 4: Run tests**
+- [x] **Step 4: Run tests**
 
 Run: `pnpm test`
 Expected: `Test Files  13 passed (13)`, `Tests  62 passed (62)`.
 
-- [ ] **Step 5: Commit** `feat(chart): renderer-independent chart model`.
+- [x] **Step 5: Commit** `feat(chart): renderer-independent chart model`.
 
 ---
 
@@ -2383,7 +2383,7 @@ Expected: `Test Files  13 passed (13)`, `Tests  62 passed (62)`.
 - Consumes: `decimate`, `makeParams`, `createBuckets` (Task 4); `segmentsInto`, `segmentCapacity` (Task 5); `Backend` (Task 10).
 - Produces: `interface Ctx2D`, `interface Canvas2DLike`, `class Canvas2DBackend(canvas: Canvas2DLike, background: string) implements Backend` with `static create(host: HTMLElement, background: string)`.
 
-- [ ] **Step 1: Write the failing test** `tests/canvas2d.test.ts`:
+- [x] **Step 1: Write the failing test** `tests/canvas2d.test.ts`:
 
 ```ts
 import { describe, expect, it } from "vitest";
@@ -2438,12 +2438,12 @@ describe("Canvas2DBackend", () => {
 });
 ```
 
-- [ ] **Step 2: Run it**
+- [x] **Step 2: Run it**
 
 Run: `pnpm test`
 Expected: FAIL. `tests/canvas2d.test.ts` cannot resolve `../src/baselines/canvas2d`.
 
-- [ ] **Step 3: Implement** `src/baselines/canvas2d.ts`:
+- [x] **Step 3: Implement** `src/baselines/canvas2d.ts`:
 
 ```ts
 import { createBuckets, decimate, makeParams, type Buckets } from "../core/decimate";
@@ -2545,12 +2545,12 @@ export class Canvas2DBackend implements Backend {
 }
 ```
 
-- [ ] **Step 4: Run tests**
+- [x] **Step 4: Run tests**
 
 Run: `pnpm test`
 Expected: `Test Files  14 passed (14)`, `Tests  64 passed (64)`.
 
-- [ ] **Step 5: Commit** `feat(baselines): canvas2d renderer on the cpu reference`.
+- [x] **Step 5: Commit** `feat(baselines): canvas2d renderer on the cpu reference`.
 
 ---
 
@@ -2568,7 +2568,7 @@ Expected: `Test Files  14 passed (14)`, `Tests  64 passed (64)`.
   - `input.ts`: `WHEEL_ZOOM_RATE`, `attachInput(el, model, plot): () => void`.
   - `Chart.ts`: `interface ChartOptions { capacity?; theme?; lineWidthPx?; maxGapPx?; windowMs?; orderPolicy?; autoStart?; interactive?; utcLabels?; gpuTiming? }`, `type BackendFactory = (plotHost, theme) => Backend | Promise<Backend>`, `class Chart` with `static create(container, factory, options?)`, `model`, `root`, `options`, `theme`, `kind`, `addSeries(id, color?): Ring`, `setViewport`, `setYRange`, `layout()`, `frame(now?): FrameStats`, `start()`, `stop()`, `isRunning`, `on("frame" | "error", fn)`, `emitError(e)`, `destroy()`.
 
-- [ ] **Step 1: Write the failing test** `tests/axes.test.ts`:
+- [x] **Step 1: Write the failing test** `tests/axes.test.ts`:
 
 ```ts
 import { describe, expect, it } from "vitest";
@@ -2602,12 +2602,12 @@ describe("layoutAxes", () => {
 });
 ```
 
-- [ ] **Step 2: Run it**
+- [x] **Step 2: Run it**
 
 Run: `pnpm test`
 Expected: FAIL. `tests/axes.test.ts` cannot resolve `../src/chart/axes`.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 `src/chart/theme.ts`:
 
@@ -3016,12 +3016,12 @@ export class Chart {
 }
 ```
 
-- [ ] **Step 4: Run tests**
+- [x] **Step 4: Run tests**
 
 Run: `pnpm test`
 Expected: `Test Files  15 passed (15)`, `Tests  67 passed (67)`. Then `pnpm typecheck`: exit 0.
 
-- [ ] **Step 5: Commit** `feat(chart): chart pane with axis overlay, input and render loop`.
+- [x] **Step 5: Commit** `feat(chart): chart pane with axis overlay, input and render loop`.
 
 ---
 
@@ -3035,7 +3035,7 @@ Expected: `Test Files  15 passed (15)`, `Tests  67 passed (67)`. Then `pnpm type
 - Produces: `WORKGROUP_SIZE = 64`; `interface GpuSeries { ring; ringBuffer; viewBuffer; bucketBuffer; bindGroup; width }`; `class GpuDecimator(device)` with `pipeline`, `createSeries(ring, width)`, `resize(s, width)`, `prepare(s, view): { uploadBytes; params }`, `encode(pass, s)`, `readBuckets(s): Promise<ArrayBuffer>` (tests only), `destroySeries(s)`. Test page global `window.__gpuTest.parity(seed, cases): Promise<ParityReport>` with `ParityReport { cases; columns; mismatches; emptyWindows; wrapped; firstMismatch }`.
 - Precondition: Chrome is installed at `C:\Program Files\Google\Chrome\Application\chrome.exe` (it is on this host). `pnpm test:gpu` needs it.
 
-- [ ] **Step 1: Create the Playwright config** `playwright.config.ts`:
+- [x] **Step 1: Create the Playwright config** `playwright.config.ts`:
 
 ```ts
 import { defineConfig } from "@playwright/test";
@@ -3064,7 +3064,7 @@ export default defineConfig({
 });
 ```
 
-- [ ] **Step 2: Write the failing GPU spec** `e2e/gpu/parity.spec.ts` (Task 14 adds a second test):
+- [x] **Step 2: Write the failing GPU spec** `e2e/gpu/parity.spec.ts` (Task 14 adds a second test):
 
 ```ts
 import { expect, test } from "@playwright/test";
@@ -3087,7 +3087,7 @@ test("GPU decimation is byte-identical to the CPU reference (invariant 1)", asyn
 Run: `pnpm test:gpu`
 Expected: FAIL. `gpu-test.html` does not exist, so the `data-ready` wait times out.
 
-- [ ] **Step 3: Implement the shader** `src/gpu/decimate.wgsl`:
+- [x] **Step 3: Implement the shader** `src/gpu/decimate.wgsl`:
 
 ```wgsl
 // M4 decimation: one invocation per pixel column (ADR 0002).
@@ -3274,7 +3274,7 @@ export class GpuDecimator {
 }
 ```
 
-- [ ] **Step 4: Create the test page** `gpu-test.html`:
+- [x] **Step 4: Create the test page** `gpu-test.html`:
 
 ```html
 <!doctype html>
@@ -3382,14 +3382,14 @@ window.__gpuTest = { parity };
 document.body.dataset.ready = "true";
 ```
 
-- [ ] **Step 5: Run the GPU spec and the unit tests**
+- [x] **Step 5: Run the GPU spec and the unit tests**
 
 Run: `pnpm test:gpu`
 Expected: `1 passed`. If it fails with mismatches, do not loosen the comparison: compare `columnOf` in `src/core/decimate.ts` with `columnOf` in `decimate.wgsl` (ADR 0002) and check the bucket layout.
 
 Run: `pnpm typecheck` (exit 0) and `pnpm test` (`Test Files  15 passed (15)`, `Tests  67 passed (67)`).
 
-- [ ] **Step 6: Commit** `feat(gpu): decimation compute shader with byte-exact cpu parity`.
+- [x] **Step 6: Commit** `feat(gpu): decimation compute shader with byte-exact cpu parity`.
 
 ---
 
@@ -3403,7 +3403,7 @@ Run: `pnpm typecheck` (exit 0) and `pnpm test` (`Test Files  15 passed (15)`, `T
 - Consumes: `GpuDecimator` (Task 13), `packDraw`, `parseColor`, `DRAW_BYTES`, `AcquiredDevice` (Task 9), `Backend`, `FrameInput`, `RenderStats` (Task 10).
 - Produces: `class GpuTimer(device)` with `timestampWrites`, `resolve(enc)`, `collect()`, `take(): number | null` (each reading returned once), `destroy()`; `interface WebGpuBackendOptions { background; gpuTiming?; onDeviceLost? }`; `class WebGpuBackend implements Backend` with `static create(host, acquired, opts)`, `readBuckets(index)` (tests only). Test page adds `window.__gpuTest.renderStep(): Promise<PixelReport>`.
 
-- [ ] **Step 1: Write the failing render test.** Replace `e2e/gpu/parity.spec.ts` with:
+- [x] **Step 1: Write the failing render test.** Replace `e2e/gpu/parity.spec.ts` with:
 
 ```ts
 import { expect, test } from "@playwright/test";
@@ -3438,7 +3438,7 @@ test("renders a step without flipping or shifting it", async ({ page }) => {
 Run: `pnpm test:gpu`
 Expected: the parity test passes; the render test FAILS because `window.__gpuTest.renderStep` is not a function.
 
-- [ ] **Step 2: Implement** `src/gpu/timer.ts`:
+- [x] **Step 2: Implement** `src/gpu/timer.ts`:
 
 ```ts
 /**
@@ -3776,7 +3776,7 @@ export class WebGpuBackend implements Backend {
 }
 ```
 
-- [ ] **Step 3: Replace** `src/testing/gpuTestPage.ts` with the full version:
+- [x] **Step 3: Replace** `src/testing/gpuTestPage.ts` with the full version:
 
 ```ts
 // Test hooks for e2e/gpu/*.spec.ts. Loaded only by gpu-test.html; never part of the library.
@@ -3914,14 +3914,14 @@ window.__gpuTest = { parity, renderStep };
 document.body.dataset.ready = "true";
 ```
 
-- [ ] **Step 4: Run**
+- [x] **Step 4: Run**
 
 Run: `pnpm test:gpu`
 Expected: `2 passed`. If `renderStep` fails, print `r.checks`: `lowLineLeft` false with `noInkBelowRight` false means the y axis is flipped; `stepConnector` false means the connector rule differs from `segmentsInto`.
 
 Run: `pnpm typecheck` (exit 0) and `pnpm test` (67 passed).
 
-- [ ] **Step 5: Commit** `feat(gpu): webgpu render backend with segment shader and pass timing`.
+- [x] **Step 5: Commit** `feat(gpu): webgpu render backend with segment shader and pass timing`.
 
 ---
 
@@ -3936,7 +3936,7 @@ Run: `pnpm typecheck` (exit 0) and `pnpm test` (67 passed).
 - Consumes: `Chart`, `ChartOptions` (Task 12), `WebGpuBackend` (Task 14), `acquireDevice`, `isSupported` (Task 9), `Walk` (Task 2).
 - Produces: `class GpuChart` with `static isSupported()`, `static create(container, options?)`, `addSeries({ id, color? }): SeriesHandle`, `setViewport`, `setYRange`, `on("frame" | "error", fn)`, `start()`, `stop()`, `destroy()`; `interface SeriesHandle { id; append(t, y): IngestReport }`. `class SyntheticSource({ series, seed, hz, intervalMs?, now?, level? })` with `onBatch(fn)`, `start(fromT?)`, `stop()`, `running`, `tick()`. `src/index.ts` exports the public surface listed in spec section 5 plus `VERSION`.
 
-- [ ] **Step 1: Write the failing test** `tests/synthetic.test.ts`:
+- [x] **Step 1: Write the failing test** `tests/synthetic.test.ts`:
 
 ```ts
 import { describe, expect, it, vi } from "vitest";
@@ -3990,12 +3990,12 @@ describe("SyntheticSource", () => {
 });
 ```
 
-- [ ] **Step 2: Run it**
+- [x] **Step 2: Run it**
 
 Run: `pnpm test`
 Expected: FAIL. `tests/synthetic.test.ts` cannot resolve `../src/adapters/synthetic`.
 
-- [ ] **Step 3: Implement** `src/adapters/synthetic.ts`:
+- [x] **Step 3: Implement** `src/adapters/synthetic.ts`:
 
 ```ts
 import { Walk } from "../core/dataset";
@@ -4173,12 +4173,12 @@ export type { Viewport, Bounds } from "./core/viewport";
 export const VERSION = "0.1.0";
 ```
 
-- [ ] **Step 4: Run tests**
+- [x] **Step 4: Run tests**
 
 Run: `pnpm test`
 Expected: `Test Files  16 passed (16)`, `Tests  70 passed (70)` (the smoke test still passes because `VERSION` is unchanged). Then `pnpm typecheck`: exit 0.
 
-- [ ] **Step 5: Commit** `feat: public gpuchart api and synthetic source`.
+- [x] **Step 5: Commit** `feat: public gpuchart api and synthetic source`.
 
 ---
 
@@ -4192,7 +4192,7 @@ Expected: `Test Files  16 passed (16)`, `Tests  70 passed (70)` (the smoke test 
 - Consumes: `Backend`, `FrameInput`, `RenderStats` (Task 10), `Theme` (Task 12).
 - Produces: `class LinearWindow(capacity, seriesCount)` with `count`, `append(x, ys[])`, `view(): { x: Float64Array; y: Float32Array[] }`; `class UPlotBackend(host, theme) implements Backend` (`drawsOwnAxes = true`, uses `onAppend`) with `static create(host, theme)`.
 
-- [ ] **Step 1: Write the failing test** `tests/linearWindow.test.ts`:
+- [x] **Step 1: Write the failing test** `tests/linearWindow.test.ts`:
 
 ```ts
 import { describe, expect, it } from "vitest";
@@ -4228,12 +4228,12 @@ describe("LinearWindow", () => {
 });
 ```
 
-- [ ] **Step 2: Run it**
+- [x] **Step 2: Run it**
 
 Run: `pnpm test`
 Expected: FAIL. `tests/linearWindow.test.ts` cannot resolve `../src/baselines/linearWindow`.
 
-- [ ] **Step 3: Implement** `src/baselines/linearWindow.ts`:
+- [x] **Step 3: Implement** `src/baselines/linearWindow.ts`:
 
 ```ts
 /**
@@ -4427,12 +4427,12 @@ function lowerBound(a: Float64Array, x: number, after = false): number {
 }
 ```
 
-- [ ] **Step 4: Run tests**
+- [x] **Step 4: Run tests**
 
 Run: `pnpm test`
 Expected: `Test Files  17 passed (17)`, `Tests  72 passed (72)`. Then `pnpm typecheck`: exit 0.
 
-- [ ] **Step 5: Commit** `feat(baselines): uplot baseline fed through a sliding window`.
+- [x] **Step 5: Commit** `feat(baselines): uplot baseline fed through a sliding window`.
 
 ---
 
@@ -4447,7 +4447,7 @@ Expected: `Test Files  17 passed (17)`, `Tests  72 passed (72)`. Then `pnpm type
 - Behavior: WebGPU pane runs by default; the baselines start paused (running them shares the page's frame budget). Without WebGPU the banner states the reason, the WebGPU pane shows it, and the Canvas2D pane runs by default. Follow window = the whole buffer (`windowMs = points`, since samples are 1 ms apart).
 - UI rules: load the `taste` design skill before changing any styling. The CSS below already follows it (one accent, mono tabular numbers, no gradients, reduced-motion respected). Keep it.
 
-- [ ] **Step 1: Write the failing specs**
+- [x] **Step 1: Write the failing specs**
 
 `e2e/fallback/fallback.spec.ts`:
 
@@ -4498,7 +4498,7 @@ test("demo: the WebGPU pane runs and reports CPU and GPU time", async ({ page })
 Run: `pnpm e2e`
 Expected: FAIL. `/` has no `data-ready` attribute because `index.html` does not exist.
 
-- [ ] **Step 2: Implement** `index.html`:
+- [x] **Step 2: Implement** `index.html`:
 
 ```html
 <!doctype html>
@@ -4953,7 +4953,7 @@ async function main(): Promise<void> {
 void main();
 ```
 
-- [ ] **Step 3: Run**
+- [x] **Step 3: Run**
 
 Run: `pnpm e2e`
 Expected: `2 passed`.
@@ -4963,9 +4963,9 @@ Expected: `3 passed`.
 
 Run: `pnpm typecheck` (exit 0).
 
-- [ ] **Step 4: Look at it.** Start `pnpm dev` (port 5430), open `http://localhost:5430/` in Chrome, and check: three panes, the WebGPU pane scrolling with 4 series, stats updating, Run on Canvas2D lowers the page fps, wheel zoom and drag work on every pane, double-click returns to follow. Stop the dev server. Record one ledger line with what you saw.
+- [x] **Step 4: Look at it.** Start `pnpm dev` (port 5430), open `http://localhost:5430/` in Chrome, and check: three panes, the WebGPU pane scrolling with 4 series, stats updating, Run on Canvas2D lowers the page fps, wheel zoom and drag work on every pane, double-click returns to follow. Stop the dev server. Record one ledger line with what you saw.
 
-- [ ] **Step 5: Commit** `feat(demo): three-pane demo with live readouts and fallback`.
+- [x] **Step 5: Commit** `feat(demo): three-pane demo with live readouts and fallback`.
 
 ---
 
@@ -4983,7 +4983,7 @@ Run: `pnpm typecheck` (exit 0).
   - `runner.ts`: `interface BenchChart { model; frame(now) }`, `interface RunOptions { seriesIds; warmupFrames; raf; isVisible? }`, `interface RendererRun { frameMs; gpuMs; inputHash; uploadBytes }`, `runRenderer(chart, data, initialPoints, script, opts): Promise<RendererRun>`.
   - `report.ts`: `BenchEnv`, `RendererResult`, `ScenarioSpec`, `ScenarioResult`, `BenchFile` (schema 1), `HEADLINE_SCENARIO = "4x1M"`, `chromeVersion(ua)`, `hardwareLine(env)`, `renderHeadline(file)`, `renderTable(file)`, `applyToReadme(readme, file)` (between `<!-- headline:start -->`/`<!-- headline:end -->` and `<!-- bench:start -->`/`<!-- bench:end -->`).
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `tests/bench.test.ts`:
 
@@ -5149,12 +5149,12 @@ describe("bench report", () => {
 });
 ```
 
-- [ ] **Step 2: Run them**
+- [x] **Step 2: Run them**
 
 Run: `pnpm test`
 Expected: FAIL. Both files cannot resolve their `../src/bench/...` imports.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 `src/bench/script.ts`:
 
@@ -5480,12 +5480,12 @@ export function applyToReadme(readme: string, file: BenchFile): string {
 }
 ```
 
-- [ ] **Step 4: Run tests**
+- [x] **Step 4: Run tests**
 
 Run: `pnpm test`
 Expected: `Test Files  19 passed (19)`, `Tests  82 passed (82)`. Then `pnpm typecheck`: exit 0.
 
-- [ ] **Step 5: Commit** `feat(bench): scripted steps, fairness hash, runner and report`.
+- [x] **Step 5: Commit** `feat(bench): scripted steps, fairness hash, runner and report`.
 
 ---
 
@@ -5499,7 +5499,7 @@ Expected: `Test Files  19 passed (19)`, `Tests  82 passed (82)`. Then `pnpm type
 - Consumes: Tasks 11 to 18.
 - Produces: `/bench.html?name=&points=&series=&frames=&warmup=&seed=&ingestHz=&renderers=` which publishes `window.__bench = { done, result?: PageResult, error? }`; `BENCH_START_MS`, `PLOT = { width: 1600, height: 600 }`, `interface PageResult { scenario; env }`. `pnpm bench` (full: scenarios 4x1M, 4x100k on all three renderers, 4x2M and 4x5M on WebGPU only; 600 frames, 60 warmup) and `pnpm bench -- --quick` (4x100k, 40 frames, writes the git-ignored `bench/results/quick.json`).
 
-- [ ] **Step 1: Write the failing test.** Replace `e2e/gpu/pages.spec.ts` with:
+- [x] **Step 1: Write the failing test.** Replace `e2e/gpu/pages.spec.ts` with:
 
 ```ts
 import { expect, test } from "@playwright/test";
@@ -5528,7 +5528,7 @@ test("bench page: all renderers finish with identical input hashes (invariant 9)
 Run: `pnpm test:gpu`
 Expected: 3 pass, and the bench page test FAILS because `bench.html` does not exist.
 
-- [ ] **Step 2: Implement** `bench.html`:
+- [x] **Step 2: Implement** `bench.html`:
 
 ```html
 <!doctype html>
@@ -5791,7 +5791,7 @@ main().catch((e: unknown) => {
 });
 ```
 
-- [ ] **Step 3: Run the specs and a quick bench**
+- [x] **Step 3: Run the specs and a quick bench**
 
 Run: `pnpm test:gpu`
 Expected: `4 passed`.
@@ -5801,7 +5801,7 @@ Expected: three lines for `4x100k` (webgpu, canvas2d, uplot), each with p50/p95/
 
 Check the preview server was stopped: `netstat -ano | findstr :5434` prints nothing.
 
-- [ ] **Step 4: Commit** `feat(bench): bench page and cli writing results json`.
+- [x] **Step 4: Commit** `feat(bench): bench page and cli writing results json`.
 
 ---
 
@@ -5813,7 +5813,7 @@ Check the preview server was stopped: `netstat -ano | findstr :5434` prints noth
 **Interfaces:**
 - Produces: `pnpm build` (typecheck, demo, library ESM bundle and declarations in `dist/lib`), `pnpm pack:smoke`.
 
-- [ ] **Step 1: Write the smoke test first** `scripts/pack-smoke.mjs`:
+- [x] **Step 1: Write the smoke test first** `scripts/pack-smoke.mjs`:
 
 ```js
 // Packs the library, installs the tarball into a temp project, runs it in Node and typechecks a consumer
@@ -5884,7 +5884,7 @@ try {
 Run: `pnpm pack:smoke`
 Expected: FAIL with `dist/lib is missing. Run pnpm build first.`
 
-- [ ] **Step 2: Implement** `vite.lib.config.ts`:
+- [x] **Step 2: Implement** `vite.lib.config.ts`:
 
 ```ts
 import { resolve } from "node:path";
@@ -5924,7 +5924,7 @@ export default defineConfig({
 }
 ```
 
-- [ ] **Step 3: Run**
+- [x] **Step 3: Run**
 
 Run: `pnpm build`
 Expected: exit 0. `dist/lib/index.js` (about 48 kB) and `dist/lib/index.d.ts` exist. `grep -c uplot dist/lib/index.js` prints `0`.
@@ -5936,7 +5936,7 @@ imported 0.1.0; decimate ok; isSupported in Node: false (This browser does not e
 consumer typecheck ok without @webgpu/types (sathwik-gpu-timeseries-0.1.0.tgz)
 ```
 
-- [ ] **Step 4: Commit** `build(lib): esm bundle, declarations and pack smoke test`.
+- [x] **Step 4: Commit** `build(lib): esm bundle, declarations and pack smoke test`.
 
 ---
 
@@ -5945,7 +5945,7 @@ consumer typecheck ok without @webgpu/types (sathwik-gpu-timeseries-0.1.0.tgz)
 **Files:**
 - Create: `Dockerfile`, `.dockerignore`, `deploy/nginx.conf`, `docker-compose.yml`, `.github/workflows/ci.yml`
 
-- [ ] **Step 1: Create** `Dockerfile`:
+- [x] **Step 1: Create** `Dockerfile`:
 
 ```dockerfile
 # Builds the demo (index, bench and GPU test pages) and serves it with nginx. The browser still needs WebGPU.
@@ -6035,7 +6035,7 @@ jobs:
       - run: docker build -t webgpu-chart:ci .
 ```
 
-- [ ] **Step 2: Build, run, probe, stop**
+- [x] **Step 2: Build, run, probe, stop**
 
 ```bash
 docker compose up -d --build app
@@ -6048,7 +6048,7 @@ docker ps -a --filter name=webgpu-chart --format "{{.Names}}"
 
 Expected: `webgpu-chart-app 0.0.0.0:5432->80/tcp`, then `200`, `200`, and nothing listed after `down`.
 
-- [ ] **Step 3: Lint the workflow**
+- [x] **Step 3: Lint the workflow**
 
 ```bash
 docker run --rm --name webgpu-chart-actionlint -v "${PWD}:/repo" -w /repo rhysd/actionlint:latest -color
@@ -6056,7 +6056,7 @@ docker run --rm --name webgpu-chart-actionlint -v "${PWD}:/repo" -w /repo rhysd/
 
 Expected: no output, exit 0. In Git Bash prefix the command with `MSYS_NO_PATHCONV=1` and use `"$(pwd -W):/repo"`. The workflow cannot run without a remote; note that in the ledger.
 
-- [ ] **Step 4: Commit** `ci: docker demo image and github actions workflow`.
+- [x] **Step 4: Commit** `ci: docker demo image and github actions workflow`.
 
 ---
 
@@ -6065,9 +6065,9 @@ Expected: no output, exit 0. In Git Bash prefix the command with `MSYS_NO_PATHCO
 **Files:**
 - Modify: `.superpowers/sdd/2026-10-04-webgpu-chart/progress.md` only (unless a gate fails)
 
-- [ ] **Step 1: Run G1 to G6, G8 and G9** from the Gates table, in order, and paste the summary line of each into the ledger (for example `G2 pnpm test: 19 files, 82 passed`).
+- [x] **Step 1: Run G1 to G6, G8 and G9** from the Gates table, in order, and paste the summary line of each into the ledger (for example `G2 pnpm test: 19 files, 82 passed`).
 
-- [ ] **Step 2: Port and secret checks**
+- [x] **Step 2: Port and secret checks**
 
 ```bash
 git grep -nE "localhost:[0-9]{4}|--port [0-9]{4}|\"[0-9]{4}:[0-9]+\"" -- . ":!pnpm-lock.yaml" ":!docs/superpowers/plans/*" | grep -vE "543[0-9]"
@@ -6076,9 +6076,9 @@ git grep -nIiE "(api[_-]?key|secret|token|password)\s*[:=]" -- . ":!pnpm-lock.ya
 
 Expected: both print nothing. (Container-internal port 80 is fine.)
 
-- [ ] **Step 3: If a gate fails**, use superpowers:systematic-debugging. Fix the cause in its own commit `fix(<area>): <what>`, add a `Ruling:` ledger line, then re-run every gate.
+- [x] **Step 3: If a gate fails**, use superpowers:systematic-debugging. Fix the cause in its own commit `fix(<area>): <what>`, add a `Ruling:` ledger line, then re-run every gate.
 
-- [ ] **Step 4: Commit** `chore: record gate results` (ledger only).
+- [x] **Step 4: Commit** `chore: record gate results` (ledger only).
 
 ---
 
@@ -6088,9 +6088,9 @@ Expected: both print nothing. (Container-internal port 80 is fine.)
 - Create: `scripts/bench-table.ts`, `README.md` (first version), `bench/results/<date>-chrome-<gpu>.json`, `bench/results/latest.json`
 - Modify: `.github/workflows/ci.yml` (add one step)
 
-- [ ] **Step 1: Prepare the machine.** Plugged in, no other GPU-heavy apps you started, no other Chrome automation running. Record the Windows power mode in the ledger (`powercfg /getactivescheme`).
+- [x] **Step 1: Prepare the machine.** Plugged in, no other GPU-heavy apps you started, no other Chrome automation running. Record the Windows power mode in the ledger (`powercfg /getactivescheme`).
 
-- [ ] **Step 2: Run the full bench**
+- [x] **Step 2: Run the full bench**
 
 ```bash
 pnpm build
@@ -6099,7 +6099,7 @@ pnpm bench
 
 Expected: about 2 to 6 minutes. One line per scenario and renderer, then `wrote bench/results/<date>-chrome-nvidia-lovelace.json and bench/results/latest.json`. Open `latest.json` and check: `env.crossOriginIsolated` is `true`; scenario `4x1M` has `webgpu`, `canvas2d` and `uplot` without `error`; all three have the same `inputHash`; every `frameMs.n` is 600. If any check fails, find the cause; do not edit the JSON by hand. Re-run instead.
 
-- [ ] **Step 3: Create** `scripts/bench-table.ts`:
+- [x] **Step 3: Create** `scripts/bench-table.ts`:
 
 ```ts
 // Writes the README headline and bench table from bench/results/latest.json.
@@ -6127,7 +6127,7 @@ if (process.argv.includes("--check")) {
 }
 ```
 
-- [ ] **Step 4: Create the first `README.md`** with exactly this content (Task 24 adds the GIF, Task 25 checks the rest):
+- [x] **Step 4: Create the first `README.md`** with exactly this content (Task 24 adds the GIF, Task 25 checks the rest):
 
 ````markdown
 # webgpu-chart
@@ -6223,7 +6223,7 @@ flowchart LR
 MIT
 ````
 
-- [ ] **Step 5: Generate the table and check it**
+- [x] **Step 5: Generate the table and check it**
 
 ```bash
 pnpm bench:table
@@ -6232,9 +6232,9 @@ pnpm bench:table --check
 
 Expected: `README.md updated from bench/results/latest.json`, then `README.md matches bench/results/latest.json`. The headline line now starts with `**4 series x 1M points: p95 frame time` and names the GPU, CPU and Chrome version.
 
-- [ ] **Step 6: Add the README check to CI.** In `.github/workflows/ci.yml`, add a step `- run: pnpm bench:table --check` right after `- run: pnpm test`. Re-run actionlint (Task 21 Step 3).
+- [x] **Step 6: Add the README check to CI.** In `.github/workflows/ci.yml`, add a step `- run: pnpm bench:table --check` right after `- run: pnpm test`. Re-run actionlint (Task 21 Step 3).
 
-- [ ] **Step 7: Commit** `bench: headline results on the host gpu` with `bench/results/*.json` (not `quick.json`), `scripts/bench-table.ts`, `README.md`, `.github/workflows/ci.yml` and the ledger line quoting the headline sentence exactly as generated.
+- [x] **Step 7: Commit** `bench: headline results on the host gpu` with `bench/results/*.json` (not `quick.json`), `scripts/bench-table.ts`, `README.md`, `.github/workflows/ci.yml` and the ledger line quoting the headline sentence exactly as generated.
 
 ---
 
@@ -6244,7 +6244,7 @@ Expected: `README.md updated from bench/results/latest.json`, then `README.md ma
 - Create: `scripts/record-demo.ts`, `scripts/make-demo-gif.mjs`, `docs/demo.gif`
 - Modify: `README.md`
 
-- [ ] **Step 1: Create** `scripts/record-demo.ts`:
+- [x] **Step 1: Create** `scripts/record-demo.ts`:
 
 ```ts
 // Records the demo with Playwright in host Chrome (production build on port 5435) to demo-video/demo.webm.
@@ -6367,7 +6367,7 @@ console.error("could not get the GIF under 5 MB");
 process.exit(1);
 ```
 
-- [ ] **Step 2: Record and convert**
+- [x] **Step 2: Record and convert**
 
 ```bash
 pnpm build:demo
@@ -6377,9 +6377,9 @@ pnpm demo:gif
 
 Expected: `wrote demo-video/demo.webm`, then one or more `docs/demo.gif: <bytes> bytes at ...` lines ending with one under 5,242,880 bytes, exit 0.
 
-- [ ] **Step 3: Inspect it.** Get the duration with `ffprobe -v error -show_entries format=duration -of csv=p=0 docs/demo.gif` (about 13 to 16 s). Extract frames at 2 s, 5 s, 8 s and the last second with `ffmpeg -loglevel error -y -ss <t> -i docs/demo.gif -frames:v 1 <scratch>/frame-<t>.png` and look at each. Required: header and all three panes visible; 4 colored series in the WebGPU pane; the Canvas2D pane running in the second frame with a lower page fps; no blank frames. If a check fails, fix the recording script and re-record. Ledger line: size in bytes and duration.
+- [x] **Step 3: Inspect it.** Get the duration with `ffprobe -v error -show_entries format=duration -of csv=p=0 docs/demo.gif` (about 13 to 16 s). Extract frames at 2 s, 5 s, 8 s and the last second with `ffmpeg -loglevel error -y -ss <t> -i docs/demo.gif -frames:v 1 <scratch>/frame-<t>.png` and look at each. Required: header and all three panes visible; 4 colored series in the WebGPU pane; the Canvas2D pane running in the second frame with a lower page fps; no blank frames. If a check fails, fix the recording script and re-record. Ledger line: size in bytes and duration.
 
-- [ ] **Step 4: Embed it.** In `README.md`, replace the line `<!-- demo-gif -->` with:
+- [x] **Step 4: Embed it.** In `README.md`, replace the line `<!-- demo-gif -->` with:
 
 ```markdown
 ![Three panes on the same 4 x 1M point stream: WebGPU stays smooth while Canvas2D and uPlot, when switched on, drag the page frame rate down](docs/demo.gif)
@@ -6389,7 +6389,7 @@ Recorded with `pnpm demo:record && pnpm demo:gif` (headless host Chrome, synthet
 
 Run `pnpm bench:table --check` (still exit 0).
 
-- [ ] **Step 5: Commit** `docs: demo gif` with the two scripts, `docs/demo.gif`, `README.md` and the ledger.
+- [x] **Step 5: Commit** `docs: demo gif` with the two scripts, `docs/demo.gif`, `README.md` and the ledger.
 
 ---
 
@@ -6399,7 +6399,7 @@ Run `pnpm bench:table --check` (still exit 0).
 - Create: `docs/DEVDOCS.md`
 - Modify: `README.md` (only if a fact changed), `docs/handoff.md`, this plan (tick the boxes), the ledger
 
-- [ ] **Step 1: Write `docs/DEVDOCS.md`** in plain short sentences, in this order (the Opus lead polishes it later):
+- [x] **Step 1: Write `docs/DEVDOCS.md`** in plain short sentences, in this order (the Opus lead polishes it later):
   1. What it is, plus the measured headline sentence copied from README (same numbers, same hardware).
   2. A 5-minute quickstart with exact commands (`pnpm install`, `pnpm dev`, `pnpm test`, `pnpm test:gpu`, `pnpm build`, `pnpm bench`).
   3. Architecture with one mermaid diagram (reuse the README one or a more detailed version) and a short walkthrough of one frame: upload dirty ranges, write uniforms, compute pass, render pass, overlay.
@@ -6408,10 +6408,10 @@ Run `pnpm bench:table --check` (still exit 0).
   6. Key decisions and what they gave up, one line per ADR with a link.
   7. Known limits and what is left: v0.2 items from spec section 3, plus anything found during the build. Mention that GPU pass time from timestamp queries is GPU wall time and includes contention when other panes draw.
 
-- [ ] **Step 2: Re-check README facts** against the code: commands exist in `package.json`, ports match, the library snippet matches `GpuChart`'s API. Run `pnpm bench:table --check` (exit 0).
+- [x] **Step 2: Re-check README facts** against the code: commands exist in `package.json`, ports match, the library snippet matches `GpuChart`'s API. Run `pnpm bench:table --check` (exit 0).
 
-- [ ] **Step 3: Append to `docs/handoff.md`** an entry headed `## 2026-10-04, Claude (Sonnet builder), branch main` with: what changed (tasks 1 to 25), exact gate results (test counts, e2e counts, GIF size, headline sentence), what was not run (GitHub CI without a remote, npm publish, other browsers), what is left (v0.2 list), how to verify (the Gates table commands).
+- [x] **Step 3: Append to `docs/handoff.md`** an entry headed `## 2026-10-04, Claude (Sonnet builder), branch main` with: what changed (tasks 1 to 25), exact gate results (test counts, e2e counts, GIF size, headline sentence), what was not run (GitHub CI without a remote, npm publish, other browsers), what is left (v0.2 list), how to verify (the Gates table commands).
 
-- [ ] **Step 4: Tick every checkbox** in this plan file, add a final ledger line `Build: DONE - all 25 tasks complete`, and run the full gate list once more (G1 to G11).
+- [x] **Step 4: Tick every checkbox** in this plan file, add a final ledger line `Build: DONE - all 25 tasks complete`, and run the full gate list once more (G1 to G11).
 
-- [ ] **Step 5: Commit** `docs: devdocs, handoff and plan status`.
+- [x] **Step 5: Commit** `docs: devdocs, handoff and plan status`.

@@ -38,3 +38,5 @@ Task 17: complete - pnpm e2e 2 passed; pnpm test:gpu 3 passed; pnpm test 17 file
 Task 18: complete - pnpm test 19 files 82 passed; pnpm typecheck exit 0
 Task 19: complete - pnpm test:gpu 4 passed; pnpm build:demo exit 0; pnpm bench -- --quick wrote quick.json with one shared hash across 3 renderers (smoke only, numbers not recorded)
 Task 20: complete - pnpm build exit 0 (index.js 48.09 kB, 0 uplot refs); pnpm pack:smoke printed consumer typecheck ok without @webgpu/types
+Ruling: CI workflow written and actionlint-clean but cannot run without a remote; none added - plan Task 21
+Task 21: complete - docker compose up: webgpu-chart-app 5432->80, / and /bench.html 200, nothing left after down; actionlint no output exit 0

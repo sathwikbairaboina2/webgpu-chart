@@ -1,0 +1,9 @@
+# Host port 5432 is inside this repo's range (5430-5439).
+name: webgpu-chart
+services:
+  app:
+    build: .
+    image: webgpu-chart:local
+    container_name: webgpu-chart-app
+    ports:
+      - "5432:80"

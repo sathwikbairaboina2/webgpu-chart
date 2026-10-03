@@ -27,3 +27,4 @@ Task 8: complete - pnpm test 10 files 47 passed; pnpm typecheck exit 0
 Task 9: complete - pnpm test 12 files 57 passed; pnpm typecheck exit 0
 Task 10: complete - pnpm test 13 files 62 passed; pnpm typecheck exit 0
 Task 11: complete - pnpm test 14 files 64 passed; pnpm typecheck exit 0
+Task 12: complete - pnpm test 15 files 67 passed; pnpm typecheck exit 0

@@ -1,0 +1,50 @@
+{
+  "name": "@sathwik/gpu-timeseries",
+  "version": "0.1.0",
+  "description": "Streaming time-series chart that decimates millions of points per frame on WebGPU.",
+  "license": "MIT",
+  "type": "module",
+  "packageManager": "pnpm@9.12.0",
+  "engines": {
+    "node": ">=24"
+  },
+  "files": [
+    "dist/lib"
+  ],
+  "module": "./dist/lib/index.js",
+  "types": "./dist/lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/lib/index.d.ts",
+      "import": "./dist/lib/index.js"
+    }
+  },
+  "sideEffects": false,
+  "scripts": {
+    "dev": "vite",
+    "preview": "vite preview",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "build": "pnpm typecheck && pnpm build:demo && pnpm build:lib",
+    "build:demo": "vite build",
+    "build:lib": "vite build -c vite.lib.config.ts && tsc -p tsconfig.lib.json",
+    "e2e": "playwright test --project=fallback",
+    "test:gpu": "playwright test --project=gpu",
+    "bench": "tsx bench/run.ts",
+    "bench:table": "tsx scripts/bench-table.ts",
+    "pack:smoke": "node scripts/pack-smoke.mjs",
+    "demo:record": "tsx scripts/record-demo.ts",
+    "demo:gif": "node scripts/make-demo-gif.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "@types/node": "26.6.4",
+    "@webgpu/types": "0.1.74",
+    "fast-check": "4.10.2",
+    "tsx": "4.23.15",
+    "typescript": "7.0.2",
+    "uplot": "1.6.32",
+    "vite": "8.3.2",
+    "vitest": "5.0.3"
+  }
+}

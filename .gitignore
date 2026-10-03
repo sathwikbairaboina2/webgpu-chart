@@ -1,0 +1,11 @@
+node_modules/
+dist/
+test-results/
+playwright-report/
+demo-video/
+bench/results/quick.json
+*.tgz
+*.log
+.env
+.env.*
+!.env.example

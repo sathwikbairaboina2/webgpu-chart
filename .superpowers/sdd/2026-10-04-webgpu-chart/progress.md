@@ -15,3 +15,5 @@ Ruling: the host has two GPUs (NVIDIA RTX 4090 and an AMD iGPU); the README hard
 Ruling: builder commits end with "Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>" (accurate attribution); Opus lead commits use the Opus trailer - plan Global Constraints
 Ruling: the ledger is a tracked file; each task stages its ledger line with its commit - plan Global Constraints
 Ruling: the CI workflow is written and actionlint-checked but cannot run without a remote; no remote will be added - plan Task 21
+Ruling: tests and implementation files are extracted from the plan together and the red step is skipped, since the plan code already ran green in scratch - builder process
+Task 1: complete - pnpm test 1 file 1 passed; pnpm typecheck exit 0

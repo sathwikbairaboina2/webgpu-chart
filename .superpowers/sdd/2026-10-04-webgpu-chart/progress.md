@@ -31,3 +31,4 @@ Task 12: complete - pnpm test 15 files 67 passed; pnpm typecheck exit 0
 Ruling: Task 13 adds a placeholder index.html so Playwright's webServer url check (GET /) returns 200 before Task 17 writes the real demo page - cost if wrong: none, Task 17 overwrites it
 Task 13: complete - pnpm test:gpu 1 passed (parity); pnpm test 15 files 67 passed; typecheck 0
 Task 14: complete - pnpm test:gpu 2 passed; pnpm test 15 files 67 passed; typecheck 0
+Task 15: complete - pnpm test 16 files 70 passed; pnpm typecheck exit 0

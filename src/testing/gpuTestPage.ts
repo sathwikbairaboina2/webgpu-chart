@@ -4,6 +4,7 @@ import { mulberry32 } from "../core/prng";
 import { Ring } from "../core/ring";
 import { acquireDevice, type AcquiredDevice } from "../gpu/device";
 import { GpuDecimator } from "../gpu/decimator";
+import { WebGpuBackend } from "../gpu/WebGpuBackend";
 
 export interface ParityReport {
   cases: number;
@@ -12,6 +13,11 @@ export interface ParityReport {
   emptyWindows: number;
   wrapped: number;
   firstMismatch: string | null;
+}
+
+export interface PixelReport {
+  ok: boolean;
+  checks: Record<string, boolean>;
 }
 
 let acquired: Promise<AcquiredDevice> | null = null;
@@ -81,11 +87,47 @@ async function parity(seed: number, cases: number): Promise<ParityReport> {
   return report;
 }
 
+/**
+ * Renders a step (y = 0 for the first half, 1 for the second) at 200 x 100 and samples pixels in the same task,
+ * which catches flipped axes, off-by-one columns and missing connectors.
+ */
+async function renderStep(): Promise<PixelReport> {
+  const acq = await device();
+  const host = document.createElement("div");
+  host.style.cssText = "position:fixed;left:0;top:0;width:200px;height:100px";
+  document.body.appendChild(host);
+  const be = WebGpuBackend.create(host, acq, { background: "#000000" });
+  const ring = new Ring(1000);
+  const ts = Array.from({ length: 1000 }, (_, i) => i);
+  ring.append(ts, ts.map((v) => (v < 500 ? 0 : 1)));
+  be.addSeries(ring, "#ff0000");
+  be.resize(200, 100);
+  be.render({ view: { t0: 0, t1: 999 }, yRange: [-0.5, 1.5], lineWidthPx: 3, maxGapPx: 32 });
+  const canvas = host.querySelector("canvas")!;
+  const c2 = document.createElement("canvas");
+  c2.width = 200;
+  c2.height = 100;
+  const g = c2.getContext("2d")!;
+  g.drawImage(canvas, 0, 0);
+  const red = (x: number, y: number) => g.getImageData(x, y, 1, 1).data[0] > 200;
+  const checks = {
+    lowLineLeft: red(50, 75),
+    noInkAboveLeft: !red(50, 25),
+    highLineRight: red(150, 25),
+    noInkBelowRight: !red(150, 75),
+    stepConnector: red(100, 50),
+    backgroundCorner: !red(5, 5),
+  };
+  be.destroy();
+  host.remove();
+  return { ok: Object.values(checks).every(Boolean), checks };
+}
+
 declare global {
   interface Window {
-    __gpuTest: { parity: typeof parity };
+    __gpuTest: { parity: typeof parity; renderStep: typeof renderStep };
   }
 }
 
-window.__gpuTest = { parity };
+window.__gpuTest = { parity, renderStep };
 document.body.dataset.ready = "true";

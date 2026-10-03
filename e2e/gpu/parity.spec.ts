@@ -13,3 +13,15 @@ test("GPU decimation is byte-identical to the CPU reference (invariant 1)", asyn
   expect(r.wrapped).toBeGreaterThan(20);
   expect(r.emptyWindows).toBeGreaterThan(5);
 });
+
+test("renders a step without flipping or shifting it", async ({ page }) => {
+  const r = await page.evaluate(() => window.__gpuTest.renderStep());
+  expect(r.checks).toEqual({
+    lowLineLeft: true,
+    noInkAboveLeft: true,
+    highLineRight: true,
+    noInkBelowRight: true,
+    stepConnector: true,
+    backgroundCorner: true,
+  });
+});

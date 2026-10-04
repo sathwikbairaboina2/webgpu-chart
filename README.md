@@ -1,8 +1,17 @@
-# webgpu-chart
+# 📈 webgpu-chart
+
+> Streaming chart on WebGPU. A compute shader reduces millions of points to one record per pixel column.
 
 <!-- headline:start -->
 **4 series x 1M points: p95 frame time to GPU-complete 6.39 ms on WebGPU vs 46.73 ms on uPlot and 32.58 ms on Canvas2D** (one frame in flight, each frame timed until its GPU work finished, NVIDIA GeForce RTX 4090, AMD Ryzen 9 7900X 12-Core Processor, Chrome 154, measured 2026-10-04).
 <!-- headline:end -->
+
+<!-- readme-header -->
+[![CI](https://github.com/sathwikbairaboina2/webgpu-chart/actions/workflows/ci.yml/badge.svg)](https://github.com/sathwikbairaboina2/webgpu-chart/actions/workflows/ci.yml) ![License: MIT](https://img.shields.io/badge/license-MIT-blue) ![TypeScript](https://img.shields.io/badge/-TypeScript-555) ![WebGPU](https://img.shields.io/badge/-WebGPU-555) ![WGSL](https://img.shields.io/badge/-WGSL-555)
+
+| Measured | Source |
+|---|---|
+| **p95 6.4 ms vs 46.7 ms uPlot** | `bench/results/latest.json` |
 
 ![Three panes on the same 4 x 1M point stream: WebGPU stays smooth while Canvas2D and uPlot, when switched on, drag the page frame rate down](docs/demo.gif)
 

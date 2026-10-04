@@ -46,10 +46,13 @@ What the columns mean: p50, p95 and p99 are per frame, from the start of the fra
 
 ## Quickstart
 
+Needs Node 24+ and pnpm 9.
+
 ```bash
 pnpm install
 pnpm dev            # http://localhost:5430 in Chrome or Edge
 pnpm test           # unit and property tests (Node)
+pnpm e2e            # Playwright fallback tests (no WebGPU needed)
 pnpm test:gpu       # GPU parity, render and page tests (needs Chrome with WebGPU)
 pnpm build && pnpm bench
 ```
